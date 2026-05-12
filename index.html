@@ -247,8 +247,11 @@ body { padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-are
 
 .theory-body .formula {
   background: #111; border: 1px solid #222; border-radius: 6px;
-  padding: 0.8rem 1rem; margin: 0.8rem 0; font-size: 0.8rem; color: #aaa; overflow-x: auto;
+  padding: 0.8rem 1rem; margin: 0.8rem 0; color: #ddd; overflow-x: auto;
+  text-align: center;
 }
+.theory-body .formula .katex { font-size: 1.05em; }
+.theory-body .formula .katex-display { margin: 0; }
 .theory-body .example-box {
   background: #111; border-left: 3px solid #00ff88; padding: 0.8rem 1rem;
   margin: 0.8rem 0; font-size: 0.82rem; color: #bbb; line-height: 1.6;
@@ -612,7 +615,7 @@ const LANG = {
     t1p1: '\u0417\u0430\u043f\u0438\u0441\u044b\u0432\u0430\u0435\u0442 \u043a\u0430\u0436\u0434\u043e\u0435 \u043d\u0430\u0436\u0430\u0442\u0438\u0435. \u041f\u043e\u0441\u043b\u0435 10: <strong>\u041b \u041f \u041b \u041b \u041f \u041b \u041f \u041f \u041b \u041f</strong> \u2014 \u0438\u0449\u0435\u0442 \u0437\u0430\u043a\u043e\u043d\u043e\u043c\u0435\u0440\u043d\u043e\u0441\u0442\u0438.',
     t1ex1: '<strong>\u041f\u0440\u0438\u043c\u0435\u0440.</strong> \u0422\u044b \u0442\u0440\u0438 \u0440\u0430\u0437\u0430 \u043d\u0430\u0436\u0430\u043b \u00ab\u043b\u0435\u0432\u043e-\u043f\u0440\u0430\u0432\u043e\u00bb \u0438 \u043a\u0430\u0436\u0434\u044b\u0439 \u0440\u0430\u0437 \u043f\u043e\u0442\u043e\u043c \u2014 \u00ab\u043b\u0435\u0432\u043e\u00bb. \u0410\u043b\u0433\u043e\u0440\u0438\u0442\u043c \u0437\u0430\u043f\u043e\u043c\u043d\u0438\u043b. \u0421\u043b\u0435\u0434\u0443\u044e\u0449\u0438\u0439 \u0440\u0430\u0437 \u043f\u043e\u0441\u0442\u0430\u0432\u0438\u0442 \u043d\u0430 \u00ab\u043b\u0435\u0432\u043e\u00bb.',
     t1p2: '\u0414\u043b\u044f \u043a\u0430\u0436\u0434\u043e\u0439 \u043a\u043e\u043c\u0431\u0438\u043d\u0430\u0446\u0438\u0438 \u043f\u043e\u0441\u043b\u0435\u0434\u043d\u0438\u0445 \u043d\u0430\u0436\u0430\u0442\u0438\u0439 \u0441\u0447\u0438\u0442\u0430\u0435\u0442: \u0441\u043a\u043e\u043b\u044c\u043a\u043e \u0440\u0430\u0437 \u043f\u043e\u0442\u043e\u043c \u0431\u044b\u043b\u043e \u00ab\u043b\u0435\u0432\u043e\u00bb, \u0441\u043a\u043e\u043b\u044c\u043a\u043e \u00ab\u043f\u0440\u0430\u0432\u043e\u00bb.',
-    t1p3: '\u0420\u0430\u0431\u043e\u0442\u0430\u044e\u0442 <strong>\u043d\u0435\u0441\u043a\u043e\u043b\u044c\u043a\u043e \u043c\u043e\u0434\u0435\u043b\u0435\u0439 \u0440\u0430\u0437\u043d\u043e\u0439 \u0433\u043b\u0443\u0431\u0438\u043d\u044b</strong>. \u041d\u0430 L1 \u2014 \u0434\u043e 3 \u043d\u0430\u0436\u0430\u0442\u0438\u0439 \u043d\u0430\u0437\u0430\u0434. \u041d\u0430 L5 \u2014 \u0434\u043e 7. \u0413\u043e\u043b\u043e\u0441\u0443\u044e\u0442.',
+    t1p3: '\u0420\u0430\u0431\u043e\u0442\u0430\u044e\u0442 <strong>\u043d\u0435\u0441\u043a\u043e\u043b\u044c\u043a\u043e \u043c\u043e\u0434\u0435\u043b\u0435\u0439 \u0440\u0430\u0437\u043d\u043e\u0439 \u0433\u043b\u0443\u0431\u0438\u043d\u044b</strong>: \u043d\u0430 L1 \u2014 \u0434\u043e 3 \u043d\u0430\u0436\u0430\u0442\u0438\u0439 \u043d\u0430\u0437\u0430\u0434, \u043d\u0430 L5 \u2014 \u0434\u043e 7. \u041a\u0430\u0436\u0434\u0430\u044f \u0434\u0435\u043b\u0430\u0435\u0442 \u0441\u0432\u043e\u0439 \u043f\u0440\u043e\u0433\u043d\u043e\u0437. \u0413\u043e\u043b\u043e\u0441\u0430 \u0441\u043a\u043b\u0430\u0434\u044b\u0432\u0430\u044e\u0442\u0441\u044f \u2014 \u043c\u043e\u0434\u0435\u043b\u044c \u0441 \u0431\u043e\u043b\u044c\u0448\u0438\u043c \u043a\u043e\u043d\u0442\u0435\u043a\u0441\u0442\u043e\u043c \u0438 \u0431\u043e\u043b\u044c\u0448\u0438\u043c \u043a\u043e\u043b\u0438\u0447\u0435\u0441\u0442\u0432\u043e\u043c \u0434\u0430\u043d\u043d\u044b\u0445 \u0432\u0435\u0441\u0438\u0442 \u0441\u0438\u043b\u044c\u043d\u0435\u0435.',
     t1p4: '\u041f\u0430\u043c\u044f\u0442\u044c \u0438 \u0431\u0430\u043b\u0430\u043d\u0441 <strong>\u043f\u0435\u0440\u0435\u043d\u043e\u0441\u044f\u0442\u0441\u044f \u043c\u0435\u0436\u0434\u0443 \u0443\u0440\u043e\u0432\u043d\u044f\u043c\u0438</strong>. \u041a L5 \u0430\u043b\u0433\u043e\u0440\u0438\u0442\u043c \u043f\u043e\u043c\u043d\u0438\u0442 \u0432\u0441\u0435 \u0442\u0432\u043e\u0438 \u043f\u0440\u0438\u0432\u044b\u0447\u043a\u0438 \u0441 \u043d\u0430\u0447\u0430\u043b\u0430.',
     t2title: '\u041f\u043e\u0447\u0435\u043c\u0443 \u0442\u044b \u043f\u0440\u043e\u0438\u0433\u0440\u044b\u0432\u0430\u0435\u0448\u044c',
     t2p1: '\u041b\u044e\u0434\u0438 \u043f\u0443\u0442\u0430\u044e\u0442 \u0441\u043b\u0443\u0447\u0430\u0439\u043d\u043e\u0441\u0442\u044c \u0441 \u0447\u0435\u0440\u0435\u0434\u043e\u0432\u0430\u043d\u0438\u0435\u043c. \u00ab\u041b-\u041f-\u041b-\u041f\u00bb \u043a\u0430\u0436\u0435\u0442\u0441\u044f \u0441\u043b\u0443\u0447\u0430\u0439\u043d\u044b\u043c, \u043d\u043e \u043d\u0430\u0441\u0442\u043e\u044f\u0449\u0430\u044f \u0441\u043b\u0443\u0447\u0430\u0439\u043d\u043e\u0441\u0442\u044c \u2014 \u044d\u0442\u043e \u043a\u043e\u0433\u0434\u0430 \u0431\u044b\u0432\u0430\u0435\u0442 4\u20135 \u043e\u0434\u0438\u043d\u0430\u043a\u043e\u0432\u044b\u0445 \u043f\u043e\u0434\u0440\u044f\u0434.',
@@ -623,10 +626,16 @@ const LANG = {
     t2p2: '<strong>\u041d\u0430 \u0434\u043b\u0438\u043d\u043d\u043e\u0439 \u0434\u0438\u0441\u0442\u0430\u043d\u0446\u0438\u0438.</strong> \u041d\u0430 L1 (40 \u043d\u0430\u0436\u0430\u0442\u0438\u0439) \u043c\u043e\u0436\u043d\u043e \u043f\u043e\u0432\u0435\u0437\u0442\u0438. \u041a L5 (120 \u043d\u0430\u0436\u0430\u0442\u0438\u0439) \u0430\u043b\u0433\u043e\u0440\u0438\u0442\u043c \u0437\u043d\u0430\u0435\u0442 \u0432\u0441\u0435 \u0442\u0432\u043e\u0438 \u043f\u0440\u0438\u0432\u044b\u0447\u043a\u0438. <a href="https://ru.wikipedia.org/wiki/\u0417\u0430\u043a\u043e\u043d_\u0431\u043e\u043b\u044c\u0448\u0438\u0445_\u0447\u0438\u0441\u0435\u043b" target="_blank">\u0417\u0430\u043a\u043e\u043d \u0431\u043e\u043b\u044c\u0448\u0438\u0445 \u0447\u0438\u0441\u0435\u043b</a>.',
     t2p3: '\u0418\u0434\u0435\u044e \u043f\u0440\u0438\u0434\u0443\u043c\u0430\u043b <a href="https://en.wikipedia.org/wiki/Scott_Aaronson" target="_blank">\u0421\u043a\u043e\u0442\u0442 \u0410\u0430\u0440\u043e\u043d\u0441\u043e\u043d</a>: \u043c\u043e\u0437\u0433 \u2014 \u043f\u043b\u043e\u0445\u043e\u0439 \u0433\u0435\u043d\u0435\u0440\u0430\u0442\u043e\u0440 \u0441\u043b\u0443\u0447\u0430\u0439\u043d\u044b\u0445 \u0447\u0438\u0441\u0435\u043b. \u0422\u0435 \u0436\u0435 \u0430\u043b\u0433\u043e\u0440\u0438\u0442\u043c\u044b \u0440\u0430\u0431\u043e\u0442\u0430\u044e\u0442 \u0432 ZIP-\u0441\u0436\u0430\u0442\u0438\u0438: \u043f\u0440\u0435\u0434\u0441\u043a\u0430\u0437\u0443\u0435\u043c\u043e\u0435 = \u0441\u0436\u0438\u043c\u0430\u0435\u043c\u043e\u0435.',
     t3title: '\u041c\u0430\u0442\u0435\u043c\u0430\u0442\u0438\u043a\u0430',
-    t3p1: '<a href="https://en.wikipedia.org/wiki/Prediction_by_partial_matching" target="_blank">Prediction by Partial Matching</a> \u2014 \u0430\u043d\u0441\u0430\u043c\u0431\u043b\u044c <a href="https://ru.wikipedia.org/wiki/\u0426\u0435\u043f\u044c_\u041c\u0430\u0440\u043a\u043e\u0432\u0430" target="_blank">\u043c\u0430\u0440\u043a\u043e\u0432\u0441\u043a\u0438\u0445 \u043c\u043e\u0434\u0435\u043b\u0435\u0439</a>:',
-    t3formula: '\u041a\u043e\u043d\u0442\u0435\u043a\u0441\u0442 s = \u043f\u043e\u0441\u043b\u0435\u0434\u043d\u0438\u0435 k \u043d\u0430\u0436\u0430\u0442\u0438\u0439<br>C(s, 0) \u0438 C(s, 1) \u2014 \u0441\u0447\u0451\u0442\u0447\u0438\u043a\u0438<br><br>P(1|s) = (C(s,1) + 1) / (C(s,0) + C(s,1) + 2)<br><small><a href="https://ru.wikipedia.org/wiki/\u0421\u0433\u043b\u0430\u0436\u0438\u0432\u0430\u043d\u0438\u0435_\u041b\u0430\u043f\u043b\u0430\u0441\u0430" target="_blank">\u041b\u0430\u043f\u043b\u0430\u0441</a>: \u043f\u0440\u0438\u043e\u0440 Beta(1,1)</small><br><br>score += (P(1|s) \u2212 P(0|s)) \u00b7 \u221atotal \u00b7 (1 + k/2)',
-    t3p2: '\u041f\u043b\u044e\u0441: \u0433\u043b\u043e\u0431\u0430\u043b\u044c\u043d\u044b\u0439 bias, \u0442\u0435\u043d\u0434\u0435\u043d\u0446\u0438\u044f \u043a \u0447\u0435\u0440\u0435\u0434\u043e\u0432\u0430\u043d\u0438\u044e, momentum \u043f\u043e\u0441\u043b\u0435\u0434\u043d\u0438\u0445 10 \u043d\u0430\u0436\u0430\u0442\u0438\u0439.',
-    t3p3: '<a href="https://ru.wikipedia.org/wiki/\u0418\u043d\u0444\u043e\u0440\u043c\u0430\u0446\u0438\u043e\u043d\u043d\u0430\u044f_\u044d\u043d\u0442\u0440\u043e\u043f\u0438\u044f" target="_blank">\u042d\u043d\u0442\u0440\u043e\u043f\u0438\u044f</a> \u0441\u043b\u0443\u0447\u0430\u0439\u043d\u043e\u0439 \u043f\u043e\u0441\u043b\u0435\u0434\u043e\u0432\u0430\u0442\u0435\u043b\u044c\u043d\u043e\u0441\u0442\u0438 = 1 \u0431\u0438\u0442. \u0427\u0435\u043b\u043e\u0432\u0435\u0447\u0435\u0441\u043a\u0430\u044f \u2248 0.7\u20130.9 \u0431\u0438\u0442. \u0420\u0430\u0437\u043d\u0438\u0446\u0430 \u2014 \u043f\u0440\u0435\u0438\u043c\u0443\u0449\u0435\u0441\u0442\u0432\u043e \u0430\u043b\u0433\u043e\u0440\u0438\u0442\u043c\u0430.',
+    t3p1: '\u0423 \u0438\u0433\u0440\u044b \u0435\u0441\u0442\u044c \u043f\u043e\u0441\u043b\u0435\u0434\u043e\u0432\u0430\u0442\u0435\u043b\u044c\u043d\u043e\u0441\u0442\u044c \u043d\u0430\u0436\u0430\u0442\u0438\u0439 \u0438\u0437 0 \u0438 1. \u0417\u0430\u0434\u0430\u0447\u0430 \u2014 \u043f\u0440\u0435\u0434\u0441\u043a\u0430\u0437\u0430\u0442\u044c \u0441\u043b\u0435\u0434\u0443\u044e\u0449\u0435\u0435.',
+    t3p2: '\u041f\u0440\u0435\u0434\u043f\u043e\u043b\u043e\u0436\u0438\u043c, \u0447\u0442\u043e \u0441\u043b\u0435\u0434\u0443\u044e\u0449\u0435\u0435 \u043d\u0430\u0436\u0430\u0442\u0438\u0435 \u0437\u0430\u0432\u0438\u0441\u0438\u0442 \u0442\u043e\u043b\u044c\u043a\u043e \u043e\u0442 \u043f\u043e\u0441\u043b\u0435\u0434\u043d\u0438\u0445 $k$ \u043d\u0430\u0436\u0430\u0442\u0438\u0439 \u2014 \u044d\u0442\u043e <a href="https://ru.wikipedia.org/wiki/\u0426\u0435\u043f\u044c_\u041c\u0430\u0440\u043a\u043e\u0432\u0430" target="_blank">\u043c\u0430\u0440\u043a\u043e\u0432\u0441\u043a\u043e\u0435 \u0441\u0432\u043e\u0439\u0441\u0442\u0432\u043e</a>. \u042d\u0442\u0438 $k$ \u043d\u0430\u0436\u0430\u0442\u0438\u0439 \u2014 \u043a\u043e\u043d\u0442\u0435\u043a\u0441\u0442 $s$.',
+    t3p3: '\u0414\u043b\u044f \u043a\u0430\u0436\u0434\u043e\u0433\u043e $s$ \u0432\u0435\u0434\u0451\u043c \u0434\u0432\u0430 \u0441\u0447\u0451\u0442\u0447\u0438\u043a\u0430: $C(s,0)$ \u0438 $C(s,1)$ \u2014 \u0441\u043a\u043e\u043b\u044c\u043a\u043e \u0440\u0430\u0437 \u043f\u043e\u0442\u043e\u043c \u0431\u044b\u043b\u043e 0 \u0438 \u0441\u043a\u043e\u043b\u044c\u043a\u043e 1. \u0412\u0435\u0440\u043e\u044f\u0442\u043d\u043e\u0441\u0442\u044c \u0447\u0442\u043e \u0441\u043b\u0435\u0434\u0443\u044e\u0449\u0435\u0435 \u0431\u0443\u0434\u0435\u0442 \u00ab1\u00bb \u043e\u0446\u0435\u043d\u0438\u0432\u0430\u0435\u043c \u043a\u0430\u043a:',
+    t3formula: '$$P(1 \\mid s) = \\frac{C(s,1) + 1}{C(s,0) + C(s,1) + 2}$$',
+    t3p4: '\u00ab+1\u00bb \u0438 \u00ab+2\u00bb \u2014 <a href="https://ru.wikipedia.org/wiki/\u0421\u0433\u043b\u0430\u0436\u0438\u0432\u0430\u043d\u0438\u0435_\u041b\u0430\u043f\u043b\u0430\u0441\u0430" target="_blank">\u0441\u0433\u043b\u0430\u0436\u0438\u0432\u0430\u043d\u0438\u0435 \u041b\u0430\u043f\u043b\u0430\u0441\u0430</a>: \u0437\u0430\u0449\u0438\u0442\u0430 \u043e\u0442 \u0434\u0435\u043b\u0435\u043d\u0438\u044f \u043d\u0430 \u043d\u043e\u043b\u044c \u0434\u043b\u044f \u0440\u0435\u0434\u043a\u0438\u0445 \u043a\u043e\u043d\u0442\u0435\u043a\u0441\u0442\u043e\u0432. \u0415\u0441\u043b\u0438 \u0434\u0430\u043d\u043d\u044b\u0445 \u043d\u0435\u0442, \u0432\u0435\u0440\u043e\u044f\u0442\u043d\u043e\u0441\u0442\u044c \u043f\u043e \u0443\u043c\u043e\u043b\u0447\u0430\u043d\u0438\u044e \u00bd. \u042d\u043a\u0432\u0438\u0432\u0430\u043b\u0435\u043d\u0442\u043d\u043e \u0430\u043f\u0440\u0438\u043e\u0440\u043d\u043e\u043c\u0443 \u0440\u0430\u0441\u043f\u0440\u0435\u0434\u0435\u043b\u0435\u043d\u0438\u044e Beta(1,1).',
+    t3p5: '\u041f\u0430\u0440\u0430\u043b\u043b\u0435\u043b\u044c\u043d\u043e \u0440\u0430\u0431\u043e\u0442\u0430\u044e\u0442 \u043c\u043e\u0434\u0435\u043b\u0438 \u0440\u0430\u0437\u043d\u043e\u0439 \u0433\u043b\u0443\u0431\u0438\u043d\u044b $k$. \u0418\u0445 \u043f\u0440\u043e\u0433\u043d\u043e\u0437\u044b \u0441\u043a\u043b\u0430\u0434\u044b\u0432\u0430\u044e\u0442\u0441\u044f \u0441 \u0432\u0435\u0441\u043e\u043c \u2014 \u0431\u043e\u043b\u044c\u0448\u0435 \u0434\u0430\u043d\u043d\u044b\u0445 \u0438 \u0434\u043b\u0438\u043d\u043d\u0435\u0435 \u043a\u043e\u043d\u0442\u0435\u043a\u0441\u0442 \u0437\u043d\u0430\u0447\u0438\u0442 \u0431\u043e\u043b\u044c\u0448\u0435 \u0434\u043e\u0432\u0435\u0440\u0438\u044f:',
+    t3formula2: '$$\\text{score} = \\sum_{k=1}^{K} \\bigl(P(1 \\mid s_k) - P(0 \\mid s_k)\\bigr) \\cdot \\sqrt{\\text{total}_k} \\cdot \\left(1 + \\tfrac{k}{2}\\right)$$',
+    t3p6: '\u0417\u043d\u0430\u043a score \u0440\u0435\u0448\u0430\u0435\u0442 \u043f\u0440\u043e\u0433\u043d\u043e\u0437: \u043f\u043e\u043b\u043e\u0436\u0438\u0442\u0435\u043b\u044c\u043d\u044b\u0439 \u2192 \u0441\u0442\u0430\u0432\u043a\u0430 \u043d\u0430 \u00ab1\u00bb, \u043e\u0442\u0440\u0438\u0446\u0430\u0442\u0435\u043b\u044c\u043d\u044b\u0439 \u2192 \u043d\u0430 \u00ab0\u00bb.',
+    t3p7: '\u0421\u0432\u0435\u0440\u0445\u0443 \u0435\u0449\u0451 \u0442\u0440\u0438 \u044d\u0432\u0440\u0438\u0441\u0442\u0438\u043a\u0438, \u043b\u043e\u0432\u044f\u0449\u0438\u0435 \u0442\u043e, \u0447\u0442\u043e \u0447\u0438\u0441\u0442\u044b\u0439 \u041c\u0430\u0440\u043a\u043e\u0432 \u043f\u0440\u043e\u043f\u0443\u0441\u043a\u0430\u0435\u0442: \u0433\u043b\u043e\u0431\u0430\u043b\u044c\u043d\u044b\u0439 bias (\u043e\u0431\u0449\u0438\u0439 \u043f\u0435\u0440\u0435\u043a\u043e\u0441 \u043d\u0430\u0436\u0430\u0442\u0438\u0439), \u0442\u0435\u043d\u0434\u0435\u043d\u0446\u0438\u044f \u043a \u0447\u0435\u0440\u0435\u0434\u043e\u0432\u0430\u043d\u0438\u044e \u0438 momentum \u043f\u043e\u0441\u043b\u0435\u0434\u043d\u0438\u0445 10 \u043d\u0430\u0436\u0430\u0442\u0438\u0439.',
+    t3p8: '<a href="https://ru.wikipedia.org/wiki/\u0418\u043d\u0444\u043e\u0440\u043c\u0430\u0446\u0438\u043e\u043d\u043d\u0430\u044f_\u044d\u043d\u0442\u0440\u043e\u043f\u0438\u044f" target="_blank">\u042d\u043d\u0442\u0440\u043e\u043f\u0438\u044f</a> \u0438\u0434\u0435\u0430\u043b\u044c\u043d\u043e \u0441\u043b\u0443\u0447\u0430\u0439\u043d\u043e\u0439 0/1-\u043f\u043e\u0441\u043b\u0435\u0434\u043e\u0432\u0430\u0442\u0435\u043b\u044c\u043d\u043e\u0441\u0442\u0438 = 1 \u0431\u0438\u0442 \u043d\u0430 \u043d\u0430\u0436\u0430\u0442\u0438\u0435. \u0423 \u043b\u044e\u0434\u0435\u0439 \u2248 0.7\u20130.9 \u0431\u0438\u0442. \u042d\u0442\u0438 0.1\u20130.3 \u0431\u0438\u0442 \u2014 \u043f\u0440\u0435\u0438\u043c\u0443\u0449\u0435\u0441\u0442\u0432\u043e \u0430\u043b\u0433\u043e\u0440\u0438\u0442\u043c\u0430.',
     cmpVeryPredictable: '\u0422\u044b \u043f\u0440\u0435\u0434\u0441\u043a\u0430\u0437\u0443\u0435\u043c\u0435\u0435 <b>{X}%</b> \u0438\u0433\u0440\u043e\u043a\u043e\u0432',
     cmpPredictable: '\u0422\u044b \u043f\u0440\u0435\u0434\u0441\u043a\u0430\u0437\u0443\u0435\u043c\u0435\u0435 <b>{X}%</b> \u0438\u0433\u0440\u043e\u043a\u043e\u0432',
     cmpAverage: '\u0422\u044b \u043a\u0430\u043a \u0431\u043e\u043b\u044c\u0448\u0438\u043d\u0441\u0442\u0432\u043e \u0438\u0433\u0440\u043e\u043a\u043e\u0432',
@@ -721,7 +730,7 @@ const LANG = {
     t1p1: 'Records every tap. After 10: <strong>L R L L R L R R L R</strong> \u2014 searches for patterns.',
     t1ex1: '<strong>Example.</strong> You tapped "left-right" three times and each time followed with "left". The algorithm remembered. Next time it bets "left".',
     t1p2: 'For each combination of recent taps, it counts how often "left" or "right" followed.',
-    t1p3: '<strong>Multiple models run</strong> at different depths. L1: up to 3 taps back. L5: up to 7. They vote.',
+    t1p3: '<strong>Multiple models run</strong> at different depths: L1 — up to 3 taps back, L5 — up to 7. Each makes its own prediction. Their votes combine — the model with more context and more data weighs more.',
     t1p4: 'Memory and balance <strong>carry across levels</strong>. By L5 the algorithm knows all your habits from the start.',
     t2title: 'Why you lose',
     t2p1: 'Humans confuse randomness with alternation. "L-R-L-R" feels random, but real randomness includes 4\u20135 same in a row.',
@@ -732,10 +741,16 @@ const LANG = {
     t2p2: '<strong>Long run.</strong> On L1 (40 taps) you can get lucky. By L5 (120 taps) the algorithm knows your habits. <a href="https://en.wikipedia.org/wiki/Law_of_large_numbers" target="_blank">Law of large numbers</a>.',
     t2p3: 'Idea by <a href="https://en.wikipedia.org/wiki/Scott_Aaronson" target="_blank">Scott Aaronson</a>: the brain is a bad RNG. Same algorithms power ZIP compression: predictable = compressible.',
     t3title: 'The math',
-    t3p1: '<a href="https://en.wikipedia.org/wiki/Prediction_by_partial_matching" target="_blank">Prediction by Partial Matching</a> \u2014 an ensemble of <a href="https://en.wikipedia.org/wiki/Markov_chain" target="_blank">Markov models</a>:',
-    t3formula: 'Context s = last k taps<br>C(s, 0) and C(s, 1) \u2014 counters<br><br>P(1|s) = (C(s,1) + 1) / (C(s,0) + C(s,1) + 2)<br><small><a href="https://en.wikipedia.org/wiki/Additive_smoothing" target="_blank">Laplace</a>: prior Beta(1,1)</small><br><br>score += (P(1|s) \u2212 P(0|s)) \u00b7 \u221atotal \u00b7 (1 + k/2)',
-    t3p2: 'Plus: global bias, alternation tendency, momentum of last 10 taps.',
-    t3p3: '<a href="https://en.wikipedia.org/wiki/Entropy_(information_theory)" target="_blank">Entropy</a> of random sequence = 1 bit. Human \u2248 0.7\u20130.9 bits. The gap is the algorithm\'s edge.',
+    t3p1: 'The game has a sequence of 0s and 1s. The task \u2014 predict the next.',
+    t3p2: 'Assume the next tap depends only on the last $k$ taps \u2014 the <a href="https://en.wikipedia.org/wiki/Markov_chain" target="_blank">Markov property</a>. Those $k$ taps are the context $s$.',
+    t3p3: 'For each $s$ we keep two counters: $C(s,0)$ and $C(s,1)$ \u2014 how often "0" and "1" followed. We estimate the probability that the next tap is "1" as:',
+    t3formula: '$$P(1 \\mid s) = \\frac{C(s,1) + 1}{C(s,0) + C(s,1) + 2}$$',
+    t3p4: 'The "+1" and "+2" are <a href="https://en.wikipedia.org/wiki/Additive_smoothing" target="_blank">Laplace smoothing</a>: protection against divide-by-zero for rare contexts. With no data, the default probability is \u00bd. Equivalent to a Beta(1,1) prior.',
+    t3p5: 'Several depth-$k$ models run in parallel. Their predictions combine with weight \u2014 more data and longer context means more trust:',
+    t3formula2: '$$\\text{score} = \\sum_{k=1}^{K} \\bigl(P(1 \\mid s_k) - P(0 \\mid s_k)\\bigr) \\cdot \\sqrt{\\text{total}_k} \\cdot \\left(1 + \\tfrac{k}{2}\\right)$$',
+    t3p6: 'The sign of the score decides: positive \u2192 bet on "1", negative \u2192 bet on "0".',
+    t3p7: 'On top of that, three heuristics catch what pure Markov misses: global bias (overall left/right skew), alternation tendency, and momentum of the last 10 taps.',
+    t3p8: '<a href="https://en.wikipedia.org/wiki/Entropy_(information_theory)" target="_blank">Entropy</a> of a perfectly random 0/1 sequence = 1 bit per tap. Humans \u2248 0.7\u20130.9 bits. The 0.1\u20130.3 bit gap is the algorithm\'s edge.',
     cmpVeryPredictable: 'More predictable than <b>{X}%</b> of players',
     cmpPredictable: 'More predictable than <b>{X}%</b> of players',
     cmpAverage: 'You\'re right around average',
@@ -1444,6 +1459,42 @@ function showResult() {
   });
 }
 
+// ===== KATEX (lazy-loaded only when theory is opened) =====
+let _katexReady = false, _katexLoading = false, _katexQueue = [];
+function ensureKaTeX(cb) {
+  if (_katexReady) return cb();
+  _katexQueue.push(cb);
+  if (_katexLoading) return;
+  _katexLoading = true;
+  const link = document.createElement('link');
+  link.rel = 'stylesheet';
+  link.href = 'https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css';
+  document.head.appendChild(link);
+  const s1 = document.createElement('script');
+  s1.src = 'https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js';
+  s1.onload = () => {
+    const s2 = document.createElement('script');
+    s2.src = 'https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js';
+    s2.onload = () => {
+      _katexReady = true;
+      _katexQueue.forEach(fn => { try { fn(); } catch (e) {} });
+      _katexQueue = [];
+    };
+    document.head.appendChild(s2);
+  };
+  document.head.appendChild(s1);
+}
+function renderMath(el) {
+  if (!window.renderMathInElement) return;
+  window.renderMathInElement(el, {
+    delimiters: [
+      { left: '$$', right: '$$', display: true },
+      { left: '$',  right: '$',  display: false },
+    ],
+    throwOnError: false,
+  });
+}
+
 // ===== THEORY =====
 function showTheory() {
   document.getElementById('theory').innerHTML =
@@ -1477,14 +1528,23 @@ function showTheory() {
     '<hr class="theory-divider">' +
     '<p class="theory-section-title">' + T.t3title + '</p>' +
     '<p>' + T.t3p1 + '</p>' +
-    '<div class="formula">' + T.t3formula + '</div>' +
     '<p>' + T.t3p2 + '</p>' +
     '<p>' + T.t3p3 + '</p>' +
+    '<div class="formula">' + T.t3formula + '</div>' +
+    '<p>' + T.t3p4 + '</p>' +
+    '<p>' + T.t3p5 + '</p>' +
+    '<div class="formula">' + T.t3formula2 + '</div>' +
+    '<p>' + T.t3p6 + '</p>' +
+    '<p>' + T.t3p7 + '</p>' +
+    '<p>' + T.t3p8 + '</p>' +
 
     '<div style="text-align:center"><button class="btn-primary theory-play-btn" id="btnPlay2">' + T.playAgain + '</button></div>' +
 
     '<div class="author-link">' + T.author + ': <a href="https://www.facebook.com/teo.spiro.2025" target="_blank">Teo Spiro</a></div>' +
     '</div>';
+
+  // Render LaTeX (lazy-loads KaTeX on first theory open)
+  ensureKaTeX(() => renderMath(document.getElementById('theoryBody')));
 
   document.getElementById('btnBackResult').addEventListener('click', () => showScreen('result'));
   document.getElementById('btnPlay1').addEventListener('click', () => startGame(state.level));
