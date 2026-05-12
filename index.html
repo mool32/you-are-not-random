@@ -39,7 +39,11 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" media="print" onload="this.media='all'">
 <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap"></noscript>
 <style>
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+*, *::before, *::after {
+  box-sizing: border-box; margin: 0; padding: 0;
+  user-select: none; -webkit-user-select: none; -moz-user-select: none;
+  -webkit-touch-callout: none;
+}
 
 html, body {
   width: 100%; height: 100dvh; overflow: hidden;
@@ -370,31 +374,39 @@ body { padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-are
   color: #ffcc00;
 }
 
-/* ===== AGE COLLECTION CARD (shown once after L2) ===== */
+/* ===== AGE COLLECTION (modal overlay, shown once after L2) ===== */
+.age-overlay {
+  position: fixed; inset: 0; z-index: 1000;
+  display: flex; align-items: center; justify-content: center;
+  padding: 1rem;
+  background: rgba(0, 0, 0, 0.88);
+  backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+  opacity: 0;
+  animation: age-overlay-in 350ms ease 200ms forwards;
+}
+.age-overlay.fade-out {
+  animation: age-overlay-out 250ms ease forwards;
+  pointer-events: none;
+}
+@keyframes age-overlay-in  { to { opacity: 1; } }
+@keyframes age-overlay-out { to { opacity: 0; } }
+
 .age-card {
-  background: linear-gradient(180deg, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.2) 100%);
+  background: linear-gradient(180deg, #161616 0%, #0e0e0e 100%);
   border: 2px solid var(--level-color); border-radius: 16px;
-  padding: 1.4rem 1.2rem 1.2rem;
+  padding: 1.6rem 1.2rem 1.2rem;
   width: 100%; max-width: 380px;
-  display: flex; flex-direction: column; align-items: center; gap: 0.55rem;
-  margin-bottom: 0.5rem;
-  box-shadow: 0 0 32px color-mix(in srgb, var(--level-color) 18%, transparent);
-  /* Combine both: fade-up (override .fade-item's animation) + box-shadow pulse */
-  animation: fade-up 300ms ease forwards, age-attention 1.6s ease-out 500ms 2;
+  display: flex; flex-direction: column; align-items: center; gap: 0.7rem;
+  box-shadow: 0 0 48px color-mix(in srgb, var(--level-color) 30%, transparent);
+  transform: scale(0.92);
+  animation: age-card-in 350ms cubic-bezier(0.2, 0.9, 0.3, 1.2) 250ms forwards;
 }
-@keyframes age-attention {
-  0%, 100% { box-shadow: 0 0 32px color-mix(in srgb, var(--level-color) 18%, transparent); }
-  50%      { box-shadow: 0 0 56px color-mix(in srgb, var(--level-color) 45%, transparent); }
-}
-.age-card .age-title {
-  font-size: 0.7rem; font-weight: 700; color: var(--level-color);
-  letter-spacing: 0.12em; text-transform: uppercase;
-}
+@keyframes age-card-in { to { transform: scale(1); } }
+.age-overlay.fade-out .age-card { animation: age-card-out 250ms ease forwards; }
+@keyframes age-card-out { to { transform: scale(0.96); } }
+
 .age-card .age-question {
-  font-size: 1.15rem; font-weight: 700; color: #fff;
-}
-.age-card .age-reason {
-  font-size: 0.75rem; color: #888; margin-top: -0.2rem;
+  font-size: 1.3rem; font-weight: 700; color: #fff;
 }
 .age-card .age-stepper {
   display: flex; align-items: center; gap: 0.5rem;
@@ -452,7 +464,6 @@ body { padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-are
 .age-card .age-anon {
   font-size: 0.7rem; color: #555; letter-spacing: 0.03em; margin-top: 0.2rem;
 }
-.age-card.fade-out { opacity: 0; transform: scale(0.96); transition: opacity 250ms, transform 250ms; pointer-events: none; }
 
 /* ===== ENDGAME (Level 5 complete) ===== */
 .endgame-card {
@@ -627,9 +638,7 @@ const LANG = {
     balTopN: '\u0422\u044b \u0432 \u0442\u043e\u043f <b>{N}</b> \u043f\u043e \u0434\u0435\u043d\u044c\u0433\u0430\u043c',
     balBest: '\u041b\u0443\u0447\u0448\u0438\u0439 \u0440\u0435\u0437\u0443\u043b\u044c\u0442\u0430\u0442: <b>${X}</b>',
     balNewRecord: '\ud83c\udfc6 \u041d\u043e\u0432\u044b\u0439 \u0440\u0435\u043a\u043e\u0440\u0434: <b>${X}</b>',
-    ageTitle: '\u041e\u0434\u0438\u043d \u0432\u043e\u043f\u0440\u043e\u0441 \u0434\u043b\u044f \u0438\u0441\u0441\u043b\u0435\u0434\u043e\u0432\u0430\u043d\u0438\u044f',
     ageQuestion: '\u0421\u043a\u043e\u043b\u044c\u043a\u043e \u0442\u0435\u0431\u0435 \u043b\u0435\u0442?',
-    ageReason: '\u0412\u043b\u0438\u044f\u0435\u0442 \u043b\u0438 \u0432\u043e\u0437\u0440\u0430\u0441\u0442 \u043d\u0430 \u0441\u043b\u0443\u0447\u0430\u0439\u043d\u043e\u0441\u0442\u044c?',
     ageSubmit: '\u041e\u0442\u043f\u0440\u0430\u0432\u0438\u0442\u044c',
     ageSkip: '\u041f\u0440\u043e\u043f\u0443\u0441\u0442\u0438\u0442\u044c',
     ageAnon: '\u0410\u043d\u043e\u043d\u0438\u043c\u043d\u043e, \u043d\u0438\u043a\u0442\u043e \u043d\u0435 \u0443\u0437\u043d\u0430\u0435\u0442',
@@ -739,9 +748,7 @@ const LANG = {
     balTopN: 'Top <b>{N}</b> for money',
     balBest: 'Best ever: <b>${X}</b>',
     balNewRecord: '🏆 New record: <b>${X}</b>',
-    ageTitle: 'One research question',
     ageQuestion: 'How old are you?',
-    ageReason: 'Does age affect randomness?',
     ageSubmit: 'Submit',
     ageSkip: 'Skip',
     ageAnon: 'Anonymous, never shared',
@@ -1262,24 +1269,25 @@ function showResult() {
     : '';
 
   // Ask for age once, after L2 (any outcome), if not yet set.
-  // Stepper (-/+ buttons) + slider for fast jump; default value AGE_DEFAULT.
+  // Rendered as a centered modal overlay so the user can't miss it; result
+  // screen renders underneath and reveals when overlay is dismissed.
   const shouldAskAge = lvl.id === 2 && getAge() === null;
   const ageCardHTML = shouldAskAge
-    ? '<div class="age-card fade-item" id="ageCard" style="animation-delay:0ms">' +
-        '<div class="age-title">' + T.ageTitle + '</div>' +
-        '<div class="age-question">' + T.ageQuestion + '</div>' +
-        '<div class="age-reason">' + T.ageReason + '</div>' +
-        '<div class="age-stepper">' +
-          '<button class="age-step-btn" data-delta="-1" aria-label="-1">−</button>' +
-          '<div class="age-value" id="ageValue">' + AGE_DEFAULT + '</div>' +
-          '<button class="age-step-btn" data-delta="1" aria-label="+1">+</button>' +
+    ? '<div class="age-overlay" id="ageOverlay">' +
+        '<div class="age-card" id="ageCard">' +
+          '<div class="age-question">' + T.ageQuestion + '</div>' +
+          '<div class="age-stepper">' +
+            '<button class="age-step-btn" data-delta="-1" aria-label="-1">−</button>' +
+            '<div class="age-value" id="ageValue">' + AGE_DEFAULT + '</div>' +
+            '<button class="age-step-btn" data-delta="1" aria-label="+1">+</button>' +
+          '</div>' +
+          '<input type="range" class="age-slider" id="ageSlider" min="' + AGE_MIN + '" max="' + AGE_MAX + '" value="' + AGE_DEFAULT + '">' +
+          '<div class="age-actions">' +
+            '<button class="age-submit" id="ageSubmit">' + T.ageSubmit + '</button>' +
+            '<button class="age-skip" id="ageSkipBtn">' + T.ageSkip + '</button>' +
+          '</div>' +
+          '<div class="age-anon">' + T.ageAnon + '</div>' +
         '</div>' +
-        '<input type="range" class="age-slider" id="ageSlider" min="' + AGE_MIN + '" max="' + AGE_MAX + '" value="' + AGE_DEFAULT + '">' +
-        '<div class="age-actions">' +
-          '<button class="age-submit" id="ageSubmit">' + T.ageSubmit + '</button>' +
-          '<button class="age-skip" id="ageSkipBtn">' + T.ageSkip + '</button>' +
-        '</div>' +
-        '<div class="age-anon">' + T.ageAnon + '</div>' +
       '</div>'
     : '';
 
@@ -1344,7 +1352,7 @@ function showResult() {
 
     document.getElementById('result').innerHTML =
       ageCardHTML +
-      '<div class="result-card fade-item" style="animation-delay:' + (shouldAskAge ? '200' : '0') + 'ms">' +
+      '<div class="result-card fade-item" style="animation-delay:0ms">' +
         '<div class="result-card-title">' + T.shareTitle + '</div>' +
         '<span class="result-level-badge-big ' + lvl.css + '">' + T.level + ' ' + lvl.id + '</span>' +
         '<h2 style="font-size:1.3rem;line-height:1.3">' + title + '</h2>' +
@@ -1373,9 +1381,9 @@ function showResult() {
   if (nextBtn) nextBtn.addEventListener('click', () => startGame(state.level + 1));
   document.getElementById('btnTheory').addEventListener('click', showTheory);
 
-  // Age card: stepper + slider; only present after L2 if age not yet asked
-  const ageCard = document.getElementById('ageCard');
-  if (ageCard) {
+  // Age modal: stepper + slider; only present after L2 if age not yet asked
+  const ageOverlay = document.getElementById('ageOverlay');
+  if (ageOverlay) {
     const valueEl  = document.getElementById('ageValue');
     const sliderEl = document.getElementById('ageSlider');
     let currentAge = AGE_DEFAULT;
@@ -1385,13 +1393,13 @@ function showResult() {
       valueEl.textContent = v;
       sliderEl.value = v;
     };
-    ageCard.querySelectorAll('.age-step-btn').forEach(btn => {
+    ageOverlay.querySelectorAll('.age-step-btn').forEach(btn => {
       btn.addEventListener('click', () => setAgeDisplay(currentAge + (+btn.dataset.delta)));
     });
     sliderEl.addEventListener('input', (e) => setAgeDisplay(+e.target.value));
     const dismiss = () => {
-      ageCard.classList.add('fade-out');
-      setTimeout(() => ageCard.remove(), 250);
+      ageOverlay.classList.add('fade-out');
+      setTimeout(() => ageOverlay.remove(), 250);
     };
     document.getElementById('ageSubmit').addEventListener('click', () => { setAge(currentAge); dismiss(); });
     document.getElementById('ageSkipBtn').addEventListener('click', () => { setAge('skip'); dismiss(); });
