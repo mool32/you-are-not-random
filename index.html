@@ -5,6 +5,33 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, interactive-widget=resizes-content">
 <meta name="theme-color" content="#0a0a0a">
 <title>Ты не случаен</title>
+
+<!-- SEO -->
+<meta name="description" content="Попробуй обыграть алгоритм, который предсказывает каждое твоё нажатие. Игра в случайность.">
+
+<!-- Open Graph (Facebook, Telegram, LinkedIn, etc.) -->
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mool32.github.io/you-are-not-random/">
+<meta property="og:title" content="Ты не случаен">
+<meta property="og:description" content="Попробуй обыграть алгоритм, который предсказывает каждое твоё нажатие.">
+<meta property="og:image" content="https://mool32.github.io/you-are-not-random/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="ru_RU">
+<meta property="og:locale:alternate" content="en_US">
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Ты не случаен">
+<meta name="twitter:description" content="Попробуй обыграть алгоритм, который предсказывает каждое твоё нажатие.">
+<meta name="twitter:image" content="https://mool32.github.io/you-are-not-random/og.png">
+
+<!-- Favicon & PWA -->
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="icon" href="icon-192.png" type="image/png" sizes="192x192">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="manifest" href="manifest.webmanifest">
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
@@ -20,7 +47,16 @@ html, body {
 }
 body { padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left); }
 
-#app { width: 100%; height: 100%; position: relative; }
+#app {
+  width: 100%; height: 100%; position: relative;
+  --level-color: #00ff88;
+  --level-glow: rgba(0,255,136,0.06);
+}
+#app.l1 { --level-color: #00ff88; --level-glow: rgba(0,255,136,0.06); }
+#app.l2 { --level-color: #ffcc00; --level-glow: rgba(255,204,0,0.06); }
+#app.l3 { --level-color: #ff8800; --level-glow: rgba(255,136,0,0.07); }
+#app.l4 { --level-color: #ff2244; --level-glow: rgba(255,34,68,0.07); }
+#app.l5 { --level-color: #cc44ff; --level-glow: rgba(204,68,255,0.08); }
 
 .screen {
   position: absolute; inset: 0;
@@ -61,7 +97,11 @@ body { padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-are
 .welcome-footer a:hover { color: #ccc; }
 
 /* ===== GAME ===== */
-#game { user-select: none; touch-action: manipulation; cursor: pointer; }
+#game {
+  user-select: none; touch-action: manipulation; cursor: pointer;
+  background: radial-gradient(ellipse 80% 60% at center, transparent 35%, var(--level-glow) 100%);
+  transition: background 600ms ease;
+}
 
 .water-bg {
   position: absolute; bottom: 0; left: 0; right: 0; height: 100%;
@@ -71,14 +111,34 @@ body { padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-are
 }
 .game-divider {
   position: absolute; top: 0; bottom: 0; left: 50%; width: 1px;
-  background: rgba(255,255,255,0.08); z-index: 1; pointer-events: none;
+  background: var(--level-color); opacity: 0.22;
+  z-index: 1; pointer-events: none;
+  transition: background 600ms ease;
 }
 .zone-label {
   position: absolute; top: 50%; transform: translateY(-50%);
-  font-size: 1.5rem; color: rgba(255,255,255,0.06); z-index: 1; pointer-events: none;
+  font-size: 3rem; color: var(--level-color); opacity: 0.22;
+  z-index: 1; pointer-events: none;
+  font-weight: 700; line-height: 1;
+  transition: color 600ms ease;
 }
 .zone-label.left { left: calc(25% - 0.5em); }
 .zone-label.right { right: calc(25% - 0.5em); }
+
+/* First-tap onboarding hint: pulses left zone then right zone, hides after first tap */
+.hint-zone {
+  position: absolute; top: 0; bottom: 0; width: 50%;
+  pointer-events: none; z-index: 0; opacity: 0;
+  background: radial-gradient(ellipse at center, rgba(255,255,255,0.10) 0%, transparent 65%);
+}
+.hint-zone.hint-left  { left: 0;  animation: hint-pulse 1.4s ease-in-out 0.35s 1 both; }
+.hint-zone.hint-right { right: 0; animation: hint-pulse 1.4s ease-in-out 1.15s 1 both; }
+#game.tapped .hint-zone { animation: none !important; opacity: 0 !important; }
+@keyframes hint-pulse {
+  0%   { opacity: 0; }
+  45%  { opacity: 1; }
+  100% { opacity: 0; }
+}
 
 .game-hud {
   position: absolute; top: 0; left: 0; right: 0; z-index: 2; pointer-events: none;
@@ -143,9 +203,10 @@ body { padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-are
 .result-buttons { display: flex; flex-direction: column; gap: 0.75rem; width: 100%; max-width: 280px; margin-top: 0.5rem; }
 
 .btn-primary {
-  background: #00ff88; color: #0a0a0a; border: none; padding: 0.9rem 2rem;
+  background: var(--level-color); color: #0a0a0a; border: none; padding: 0.9rem 2rem;
   font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; font-weight: 700;
-  border-radius: 8px; cursor: pointer; transition: transform 100ms;
+  border-radius: 8px; cursor: pointer;
+  transition: transform 100ms, background 400ms ease;
 }
 .btn-primary:active { transform: scale(0.96); }
 .btn-secondary {
@@ -225,6 +286,10 @@ body { padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-are
   border-radius: 8px; cursor: pointer; transition: transform 100ms;
 }
 .btn-next-level:active { transform: scale(0.96); }
+.btn-next-level.l2 { background: #ffcc00; color: #0a0a0a; }
+.btn-next-level.l3 { background: #ff8800; color: #0a0a0a; }
+.btn-next-level.l4 { background: #ff2244; color: #fff; }
+.btn-next-level.l5 { background: #cc44ff; color: #fff; }
 .btn-next-level.final { background: #cc44ff; color: #fff; }
 
 .fade-item { opacity: 0; transform: translateY(10px); animation: fade-up 300ms ease forwards; }
@@ -264,6 +329,126 @@ body { padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-are
 .result-level-badge-big.l4 { border: 2px solid #ff2244; color: #ff2244; }
 .result-level-badge-big.l5 { border: 2px solid #cc44ff; color: #cc44ff; }
 .result-balance-big { font-size: 2.8rem; font-weight: 700; line-height: 1; }
+
+.result-comparison {
+  margin-top: 0.4rem; padding: 0.9rem 1rem;
+  background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 10px; width: 100%;
+  text-align: center; line-height: 1.4;
+}
+.result-comparison .cmp-line {
+  font-size: 1rem; color: #ddd;
+}
+.result-comparison .cmp-line b {
+  color: var(--level-color); font-size: 1.6rem; font-weight: 700;
+  display: inline-block; margin: 0 0.15em;
+}
+.result-comparison .cmp-sub {
+  font-size: 0.7rem; color: #666; margin-top: 0.25rem; letter-spacing: 0.04em;
+}
+.result-comparison .cmp-money {
+  font-size: 0.95rem; color: #bbb; margin-top: 0.6rem;
+  padding-top: 0.6rem; border-top: 1px solid rgba(255,255,255,0.06);
+}
+.result-comparison .cmp-money b {
+  color: #00ff88; font-weight: 700;
+}
+.result-comparison .cmp-best {
+  font-size: 0.85rem; color: #888; margin-top: 0.45rem;
+}
+.result-comparison .cmp-best b {
+  color: #ccc; font-weight: 700;
+}
+.result-comparison .cmp-best.is-new {
+  color: #ffcc00; font-size: 0.95rem;
+}
+.result-comparison .cmp-best.is-new b {
+  color: #ffcc00;
+}
+
+/* ===== AGE COLLECTION CARD (shown once after L2) ===== */
+.age-card {
+  background: linear-gradient(180deg, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.2) 100%);
+  border: 2px solid var(--level-color); border-radius: 16px;
+  padding: 1.4rem 1.2rem 1.2rem;
+  width: 100%; max-width: 380px;
+  display: flex; flex-direction: column; align-items: center; gap: 0.55rem;
+  margin-bottom: 0.5rem;
+  box-shadow: 0 0 32px color-mix(in srgb, var(--level-color) 18%, transparent);
+  /* Combine both: fade-up (override .fade-item's animation) + box-shadow pulse */
+  animation: fade-up 300ms ease forwards, age-attention 1.6s ease-out 500ms 2;
+}
+@keyframes age-attention {
+  0%, 100% { box-shadow: 0 0 32px color-mix(in srgb, var(--level-color) 18%, transparent); }
+  50%      { box-shadow: 0 0 56px color-mix(in srgb, var(--level-color) 45%, transparent); }
+}
+.age-card .age-title {
+  font-size: 0.7rem; font-weight: 700; color: var(--level-color);
+  letter-spacing: 0.12em; text-transform: uppercase;
+}
+.age-card .age-question {
+  font-size: 1.15rem; font-weight: 700; color: #fff;
+}
+.age-card .age-reason {
+  font-size: 0.75rem; color: #888; margin-top: -0.2rem;
+}
+.age-card .age-stepper {
+  display: flex; align-items: center; gap: 0.5rem;
+  margin: 0.4rem 0 0.2rem;
+}
+.age-card .age-step-btn {
+  width: 3rem; height: 3rem;
+  background: rgba(255,255,255,0.04); border: 1px solid #444;
+  color: var(--level-color); font-size: 1.6rem; font-weight: 700;
+  border-radius: 50%; cursor: pointer; font-family: inherit;
+  display: flex; align-items: center; justify-content: center;
+  transition: transform 100ms, background 150ms, border-color 150ms;
+}
+.age-card .age-step-btn:hover { border-color: var(--level-color); background: rgba(255,255,255,0.08); }
+.age-card .age-step-btn:active { transform: scale(0.92); }
+.age-card .age-value {
+  font-size: 3.2rem; font-weight: 700; color: #fff;
+  min-width: 4.5rem; text-align: center; line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+.age-card .age-slider {
+  -webkit-appearance: none; appearance: none;
+  width: 100%; height: 4px; background: #2a2a2a; border-radius: 2px;
+  outline: none; cursor: pointer; margin: 0.4rem 0 0.6rem;
+}
+.age-card .age-slider::-webkit-slider-thumb {
+  -webkit-appearance: none; appearance: none;
+  width: 22px; height: 22px; border-radius: 50%;
+  background: var(--level-color); cursor: pointer;
+  border: 2px solid #0a0a0a;
+  box-shadow: 0 0 12px color-mix(in srgb, var(--level-color) 60%, transparent);
+}
+.age-card .age-slider::-moz-range-thumb {
+  width: 22px; height: 22px; border-radius: 50%;
+  background: var(--level-color); cursor: pointer;
+  border: 2px solid #0a0a0a;
+}
+.age-card .age-actions {
+  display: flex; gap: 0.6rem; width: 100%; max-width: 280px; margin-top: 0.3rem;
+}
+.age-card .age-submit {
+  flex: 1; padding: 0.85rem; border: none; border-radius: 10px;
+  background: var(--level-color); color: #0a0a0a;
+  font-family: inherit; font-size: 0.95rem; font-weight: 700;
+  cursor: pointer; transition: transform 100ms;
+}
+.age-card .age-submit:active { transform: scale(0.97); }
+.age-card .age-skip {
+  background: none; border: 1px solid #333; color: #888;
+  padding: 0.85rem 1.1rem; border-radius: 10px;
+  font-family: inherit; font-size: 0.85rem; cursor: pointer;
+  transition: color 150ms, border-color 150ms;
+}
+.age-card .age-skip:hover { color: #ccc; border-color: #555; }
+.age-card .age-anon {
+  font-size: 0.7rem; color: #555; letter-spacing: 0.03em; margin-top: 0.2rem;
+}
+.age-card.fade-out { opacity: 0; transform: scale(0.96); transition: opacity 250ms, transform 250ms; pointer-events: none; }
 
 /* ===== ENDGAME (Level 5 complete) ===== */
 .endgame-card {
@@ -306,9 +491,11 @@ body { padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-are
   <!-- GAME -->
   <div id="game" class="screen">
     <div class="water-bg" id="waterBg"></div>
+    <div class="hint-zone hint-left"></div>
+    <div class="hint-zone hint-right"></div>
     <div class="game-divider"></div>
-    <div class="zone-label left">0</div>
-    <div class="zone-label right">1</div>
+    <div class="zone-label left">&larr;</div>
+    <div class="zone-label right">&rarr;</div>
     <div class="game-hud">
       <div class="hud-level" id="hudLevel"></div>
       <div class="hud-balance" id="hudBalance">$15.00</div>
@@ -340,14 +527,49 @@ const LANG = {
     hint: '\u041d\u0430 \u043a\u043e\u043c\u043f\u044c\u044e\u0442\u0435\u0440\u0435: \u0441\u0442\u0440\u0435\u043b\u043a\u0438 \u2190 \u2192',
     level: '\u0423\u0420\u041e\u0412\u0415\u041d\u042c',
     levelName: '\u0423\u0440\u043e\u0432\u0435\u043d\u044c',
-    won: '\u0422\u044b \u043e\u0431\u044b\u0433\u0440\u0430\u043b \u0430\u043b\u0433\u043e\u0440\u0438\u0442\u043c!',
-    wonBarely: '\u041f\u043e\u0431\u0435\u0434\u0430 \u043d\u0430 \u0433\u0440\u0430\u043d\u0438!',
-    predictable70: '\u0422\u044b \u043f\u043e\u043b\u043d\u043e\u0441\u0442\u044c\u044e \u043f\u0440\u0435\u0434\u0441\u043a\u0430\u0437\u0443\u0435\u043c',
-    predictable60: '\u0410\u043b\u0433\u043e\u0440\u0438\u0442\u043c \u0447\u0438\u0442\u0430\u0435\u0442 \u0442\u0435\u0431\u044f',
-    almost55: '\u041f\u043e\u0447\u0442\u0438, \u043d\u043e \u043d\u0435 \u0441\u043b\u0443\u0447\u0430\u0439\u043d\u043e',
-    lostSoClose: '\u0422\u0430\u043a \u0431\u043b\u0438\u0437\u043a\u043e!',
+    won: [
+      '\u0422\u044b \u043e\u0431\u044b\u0433\u0440\u0430\u043b \u0430\u043b\u0433\u043e\u0440\u0438\u0442\u043c!',
+      '\u041f\u043e\u0431\u0435\u0434\u0430!',
+      '\u0410\u043b\u0433\u043e\u0440\u0438\u0442\u043c \u043f\u0440\u043e\u0438\u0433\u0440\u0430\u043b',
+      '\u042d\u0442\u043e \u0442\u0432\u043e\u0439 \u0434\u0435\u043d\u044c',
+    ],
+    wonBarely: [
+      '\u041f\u043e\u0431\u0435\u0434\u0430 \u043d\u0430 \u0433\u0440\u0430\u043d\u0438!',
+      '\u0427\u0443\u0434\u043e\u043c, \u043d\u043e \u0442\u0432\u043e\u0451',
+      '\u0415\u0434\u0432\u0430-\u0435\u0434\u0432\u0430',
+      '\u0410\u043b\u0433\u043e\u0440\u0438\u0442\u043c \u0431\u044b\u043b \u0431\u043b\u0438\u0437\u043a\u043e',
+    ],
+    predictable70: [
+      '\u0422\u044b \u043f\u043e\u043b\u043d\u043e\u0441\u0442\u044c\u044e \u043f\u0440\u0435\u0434\u0441\u043a\u0430\u0437\u0443\u0435\u043c',
+      '\u0410\u043b\u0433\u043e\u0440\u0438\u0442\u043c \u0432\u0438\u0434\u0438\u0442 \u043d\u0430\u0441\u043a\u0432\u043e\u0437\u044c',
+      '\u0421\u043b\u0438\u0448\u043a\u043e\u043c \u0440\u0438\u0442\u043c\u0438\u0447\u043d\u043e',
+      '\u041c\u043e\u0437\u0433 \u043b\u044e\u0431\u0438\u0442 \u043f\u043e\u0440\u044f\u0434\u043e\u043a',
+    ],
+    predictable60: [
+      '\u0410\u043b\u0433\u043e\u0440\u0438\u0442\u043c \u0447\u0438\u0442\u0430\u0435\u0442 \u0442\u0435\u0431\u044f',
+      '\u041e\u043d \u043f\u043e\u043d\u0438\u043c\u0430\u0435\u0442 \u0442\u0432\u043e\u0439 \u0441\u0442\u0438\u043b\u044c',
+      '\u041f\u0430\u0442\u0442\u0435\u0440\u043d \u043d\u0430\u0439\u0434\u0435\u043d',
+      '\u041f\u0440\u0438\u0432\u044b\u0447\u043a\u0438 \u0432\u044b\u0434\u0430\u044e\u0442',
+    ],
+    almost55: [
+      '\u041f\u043e\u0447\u0442\u0438, \u043d\u043e \u043d\u0435 \u0441\u043b\u0443\u0447\u0430\u0439\u043d\u043e',
+      '\u0411\u043b\u0438\u0437\u043a\u043e \u043a \u0440\u0430\u043d\u0434\u043e\u043c\u0443',
+      '\u0410\u043b\u0433\u043e\u0440\u0438\u0442\u043c \u0432\u0441\u0451 \u0435\u0449\u0451 \u0432\u043f\u0435\u0440\u0435\u0434\u0438',
+      '\u0421\u043b\u0443\u0447\u0430\u0439\u043d\u043e\u0441\u0442\u044c \u0441\u043b\u043e\u0436\u043d\u0435\u0435 \u0447\u0435\u043c \u043a\u0430\u0436\u0435\u0442\u0441\u044f',
+    ],
+    lostSoClose: [
+      '\u0422\u0430\u043a \u0431\u043b\u0438\u0437\u043a\u043e!',
+      '\u0427\u0443\u0442\u044c-\u0447\u0443\u0442\u044c \u043d\u0435 \u0445\u0432\u0430\u0442\u0438\u043b\u043e',
+      '\u0410\u043b\u0433\u043e\u0440\u0438\u0442\u043c\u0443 \u043f\u043e\u0432\u0435\u0437\u043b\u043e',
+      '\u041e\u0434\u0438\u043d \u0448\u0430\u0433 \u0434\u043e \u043f\u043e\u0431\u0435\u0434\u044b',
+    ],
     impressive50: '\u0412\u043f\u0435\u0447\u0430\u0442\u043b\u044f\u044e\u0449\u0435!',
-    incredible: '\u041d\u0435\u0432\u0435\u0440\u043e\u044f\u0442\u043d\u043e!',
+    incredible: [
+      '\u041d\u0435\u0432\u0435\u0440\u043e\u044f\u0442\u043d\u043e!',
+      '\u0410\u043b\u0433\u043e\u0440\u0438\u0442\u043c \u0432 \u0437\u0430\u043c\u0435\u0448\u0430\u0442\u0435\u043b\u044c\u0441\u0442\u0432\u0435',
+      '\u0412\u043e\u0442 \u044d\u0442\u043e \u0438\u0433\u0440\u0430',
+      '\u0410\u043b\u0433\u043e\u0440\u0438\u0442\u043c \u0442\u0430\u043a\u043e\u0433\u043e \u043d\u0435 \u043e\u0436\u0438\u0434\u0430\u043b',
+    ],
     guessed: '\u0423\u0433\u0430\u0434\u0430\u043d\u043e',
     of: '\u0438\u0437',
     leftRight: '\u041b\u0435\u0432\u043e/\u043f\u0440\u0430\u0432\u043e',
@@ -364,7 +586,7 @@ const LANG = {
     allLevelsDesc: '\u0422\u044b \u043f\u0440\u043e\u0448\u0451\u043b \u0432\u0441\u0435 \u043f\u044f\u0442\u044c \u0443\u0440\u043e\u0432\u043d\u0435\u0439.',
     finalBalance: '\u0424\u0438\u043d\u0430\u043b\u044c\u043d\u044b\u0439 \u0431\u0430\u043b\u0430\u043d\u0441',
     shareTitle: '\u0422\u044b \u043d\u0435 \u0441\u043b\u0443\u0447\u0430\u0435\u043d',
-    gameComplete: '\u0422\u044b \u0434\u043e\u043a\u0430\u0437\u0430\u043b: \u0442\u044b \u0441\u043b\u0443\u0447\u0430\u0435\u043d',
+    gameComplete: '\u0422\u044b \u0434\u043e\u043a\u0430\u0437\u0430\u043b \u0441\u0432\u043e\u044e \u0440\u0430\u043d\u0434\u043e\u043c\u043d\u043e\u0441\u0442\u044c',
     provedRandom: '\u0422\u044b \u043f\u0440\u043e\u0448\u0451\u043b \u0432\u0441\u0435 5 \u0443\u0440\u043e\u0432\u043d\u0435\u0439 \u0438 \u043e\u0431\u044b\u0433\u0440\u0430\u043b \u0430\u043b\u0433\u043e\u0440\u0438\u0442\u043c.',
     theoryTitle: '\u041a\u0430\u043a \u044d\u0442\u043e \u0440\u0430\u0431\u043e\u0442\u0430\u0435\u0442?',
     back: '\u041d\u0430\u0437\u0430\u0434',
@@ -391,6 +613,22 @@ const LANG = {
     t3formula: '\u041a\u043e\u043d\u0442\u0435\u043a\u0441\u0442 s = \u043f\u043e\u0441\u043b\u0435\u0434\u043d\u0438\u0435 k \u043d\u0430\u0436\u0430\u0442\u0438\u0439<br>C(s, 0) \u0438 C(s, 1) \u2014 \u0441\u0447\u0451\u0442\u0447\u0438\u043a\u0438<br><br>P(1|s) = (C(s,1) + 1) / (C(s,0) + C(s,1) + 2)<br><small><a href="https://ru.wikipedia.org/wiki/\u0421\u0433\u043b\u0430\u0436\u0438\u0432\u0430\u043d\u0438\u0435_\u041b\u0430\u043f\u043b\u0430\u0441\u0430" target="_blank">\u041b\u0430\u043f\u043b\u0430\u0441</a>: \u043f\u0440\u0438\u043e\u0440 Beta(1,1)</small><br><br>score += (P(1|s) \u2212 P(0|s)) \u00b7 \u221atotal \u00b7 (1 + k/2)',
     t3p2: '\u041f\u043b\u044e\u0441: \u0433\u043b\u043e\u0431\u0430\u043b\u044c\u043d\u044b\u0439 bias, \u0442\u0435\u043d\u0434\u0435\u043d\u0446\u0438\u044f \u043a \u0447\u0435\u0440\u0435\u0434\u043e\u0432\u0430\u043d\u0438\u044e, momentum \u043f\u043e\u0441\u043b\u0435\u0434\u043d\u0438\u0445 10 \u043d\u0430\u0436\u0430\u0442\u0438\u0439.',
     t3p3: '<a href="https://ru.wikipedia.org/wiki/\u0418\u043d\u0444\u043e\u0440\u043c\u0430\u0446\u0438\u043e\u043d\u043d\u0430\u044f_\u044d\u043d\u0442\u0440\u043e\u043f\u0438\u044f" target="_blank">\u042d\u043d\u0442\u0440\u043e\u043f\u0438\u044f</a> \u0441\u043b\u0443\u0447\u0430\u0439\u043d\u043e\u0439 \u043f\u043e\u0441\u043b\u0435\u0434\u043e\u0432\u0430\u0442\u0435\u043b\u044c\u043d\u043e\u0441\u0442\u0438 = 1 \u0431\u0438\u0442. \u0427\u0435\u043b\u043e\u0432\u0435\u0447\u0435\u0441\u043a\u0430\u044f \u2248 0.7\u20130.9 \u0431\u0438\u0442. \u0420\u0430\u0437\u043d\u0438\u0446\u0430 \u2014 \u043f\u0440\u0435\u0438\u043c\u0443\u0449\u0435\u0441\u0442\u0432\u043e \u0430\u043b\u0433\u043e\u0440\u0438\u0442\u043c\u0430.',
+    cmpVeryPredictable: '\u0422\u044b \u043f\u0440\u0435\u0434\u0441\u043a\u0430\u0437\u0443\u0435\u043c\u0435\u0435 <b>{X}%</b> \u0438\u0433\u0440\u043e\u043a\u043e\u0432',
+    cmpPredictable: '\u0422\u044b \u043f\u0440\u0435\u0434\u0441\u043a\u0430\u0437\u0443\u0435\u043c\u0435\u0435 <b>{X}%</b> \u0438\u0433\u0440\u043e\u043a\u043e\u0432',
+    cmpAverage: '\u0422\u044b \u043a\u0430\u043a \u0431\u043e\u043b\u044c\u0448\u0438\u043d\u0441\u0442\u0432\u043e \u0438\u0433\u0440\u043e\u043a\u043e\u0432',
+    cmpRandom: '\u0422\u044b \u0441\u043b\u0443\u0447\u0430\u0439\u043d\u0435\u0435 <b>{X}%</b> \u0438\u0433\u0440\u043e\u043a\u043e\u0432',
+    cmpVeryRandom: '\u0422\u044b \u0441\u043b\u0443\u0447\u0430\u0439\u043d\u0435\u0435 <b>{X}%</b> \u0438\u0433\u0440\u043e\u043a\u043e\u0432',
+    cmpOnLevel: '\u043d\u0430 \u044d\u0442\u043e\u043c \u0443\u0440\u043e\u0432\u043d\u0435',
+    balTopAll: '\u0422\u044b \u0437\u0430\u0440\u0430\u0431\u043e\u0442\u0430\u043b \u0431\u043e\u043b\u044c\u0448\u0435 \u0432\u0441\u0435\u0445!',
+    balTopN: '\u0422\u044b \u0432 \u0442\u043e\u043f <b>{N}</b> \u043f\u043e \u0434\u0435\u043d\u044c\u0433\u0430\u043c',
+    balBest: '\u041b\u0443\u0447\u0448\u0438\u0439 \u0440\u0435\u0437\u0443\u043b\u044c\u0442\u0430\u0442: <b>${X}</b>',
+    balNewRecord: '\ud83c\udfc6 \u041d\u043e\u0432\u044b\u0439 \u0440\u0435\u043a\u043e\u0440\u0434: <b>${X}</b>',
+    ageTitle: '\u041e\u0434\u0438\u043d \u0432\u043e\u043f\u0440\u043e\u0441 \u0434\u043b\u044f \u0438\u0441\u0441\u043b\u0435\u0434\u043e\u0432\u0430\u043d\u0438\u044f',
+    ageQuestion: '\u0421\u043a\u043e\u043b\u044c\u043a\u043e \u0442\u0435\u0431\u0435 \u043b\u0435\u0442?',
+    ageReason: '\u0412\u043b\u0438\u044f\u0435\u0442 \u043b\u0438 \u0432\u043e\u0437\u0440\u0430\u0441\u0442 \u043d\u0430 \u0441\u043b\u0443\u0447\u0430\u0439\u043d\u043e\u0441\u0442\u044c?',
+    ageSubmit: '\u041e\u0442\u043f\u0440\u0430\u0432\u0438\u0442\u044c',
+    ageSkip: '\u041f\u0440\u043e\u043f\u0443\u0441\u0442\u0438\u0442\u044c',
+    ageAnon: '\u0410\u043d\u043e\u043d\u0438\u043c\u043d\u043e, \u043d\u0438\u043a\u0442\u043e \u043d\u0435 \u0443\u0437\u043d\u0430\u0435\u0442',
     langSwitch: 'EN',
   },
   en: {
@@ -402,14 +640,49 @@ const LANG = {
     hint: 'Desktop: arrow keys \u2190 \u2192',
     level: 'LEVEL',
     levelName: 'Level',
-    won: 'You beat the algorithm!',
-    wonBarely: 'Won \u2014 barely!',
-    predictable70: 'Completely predictable',
-    predictable60: 'The algorithm reads you',
-    almost55: 'Close, but not random',
-    lostSoClose: 'So close!',
+    won: [
+      'You beat the algorithm!',
+      'Victory!',
+      'Algorithm lost',
+      'Your day',
+    ],
+    wonBarely: [
+      'Won \u2014 barely!',
+      'Squeaked through',
+      'Algorithm was close',
+      'Made it',
+    ],
+    predictable70: [
+      'Completely predictable',
+      'Algorithm sees right through',
+      'Too rhythmic',
+      'The brain loves order',
+    ],
+    predictable60: [
+      'The algorithm reads you',
+      'It gets your style',
+      'Pattern found',
+      'Habits give you away',
+    ],
+    almost55: [
+      'Close, but not random',
+      'Almost random',
+      'Algorithm still ahead',
+      'Randomness is hard',
+    ],
+    lostSoClose: [
+      'So close!',
+      'Just a hair off',
+      'Algorithm got lucky',
+      'One step short',
+    ],
     impressive50: 'Impressive!',
-    incredible: 'Incredible!',
+    incredible: [
+      'Incredible!',
+      'Algorithm puzzled',
+      'What a game',
+      'Didn\'t see that coming',
+    ],
     guessed: 'Guessed',
     of: 'of',
     leftRight: 'Left/right',
@@ -426,7 +699,7 @@ const LANG = {
     allLevelsDesc: 'You beat all five levels.',
     finalBalance: 'Final balance',
     shareTitle: 'You\'re Not Random',
-    gameComplete: 'You proved: you\'re random',
+    gameComplete: 'You proved your randomness',
     provedRandom: 'You beat all 5 levels and outsmarted the algorithm.',
     theoryTitle: 'How does it work?',
     back: 'Back',
@@ -452,6 +725,22 @@ const LANG = {
     t3formula: 'Context s = last k taps<br>C(s, 0) and C(s, 1) \u2014 counters<br><br>P(1|s) = (C(s,1) + 1) / (C(s,0) + C(s,1) + 2)<br><small><a href="https://en.wikipedia.org/wiki/Additive_smoothing" target="_blank">Laplace</a>: prior Beta(1,1)</small><br><br>score += (P(1|s) \u2212 P(0|s)) \u00b7 \u221atotal \u00b7 (1 + k/2)',
     t3p2: 'Plus: global bias, alternation tendency, momentum of last 10 taps.',
     t3p3: '<a href="https://en.wikipedia.org/wiki/Entropy_(information_theory)" target="_blank">Entropy</a> of random sequence = 1 bit. Human \u2248 0.7\u20130.9 bits. The gap is the algorithm\'s edge.',
+    cmpVeryPredictable: 'More predictable than <b>{X}%</b> of players',
+    cmpPredictable: 'More predictable than <b>{X}%</b> of players',
+    cmpAverage: 'You\'re right around average',
+    cmpRandom: 'More random than <b>{X}%</b> of players',
+    cmpVeryRandom: 'More random than <b>{X}%</b> of players',
+    cmpOnLevel: 'on this level',
+    balTopAll: 'You earned the most!',
+    balTopN: 'Top <b>{N}</b> for money',
+    balBest: 'Best ever: <b>${X}</b>',
+    balNewRecord: '🏆 New record: <b>${X}</b>',
+    ageTitle: 'One research question',
+    ageQuestion: 'How old are you?',
+    ageReason: 'Does age affect randomness?',
+    ageSubmit: 'Submit',
+    ageSkip: 'Skip',
+    ageAnon: 'Anonymous, never shared',
     langSwitch: 'RU',
   },
 };
@@ -491,6 +780,18 @@ const state = {
   lastPressTime: 0,
   gameStartTime: 0,
   timestamps: [],
+  firstTapDone: false,
+  predScores: [],     // algorithm score per prediction (post-warmup, aligned with predictions)
+  lastPredScore: 0,   // captured inside predict() each call
+  tapsX: [],          // per-tap X position, % of game element width (0-100)
+  tapsY: [],          // per-tap Y position, % of game element height (0-100)
+  pointerTypes: [],   // per-tap input device: m=mouse, t=touch, p=pen, k=keyboard
+  // Algorithm checkpoint: snapshot taken at level-entry; restored on retry so
+  // a lost attempt does not feed the model on the next try. Won attempts'
+  // learning still carries forward via the next-level snapshot.
+  pressesCheckpoint: [],
+  tableCheckpoint: {},
+  currentMaxKCheckpoint: 0,
 };
 
 const MIN_INTERVAL = 20;
@@ -525,6 +826,7 @@ function expandTable(newMaxK) {
 
 // ===== PREDICTION (ensemble) =====
 function predict() {
+  state.lastPredScore = 0;
   const n = state.presses.length;
   if (n < 1) return Math.random() < 0.5 ? 0 : 1;
   const maxK = state.currentMaxK;
@@ -562,6 +864,7 @@ function predict() {
     score += state.presses[n-1] === 1 ? -ralt : ralt;
   }
 
+  state.lastPredScore = Math.round(score * 1000) / 1000;
   if (score > 0) return 1;
   if (score < 0) return 0;
   return Math.random() < 0.5 ? 0 : 1;
@@ -613,20 +916,33 @@ function createRipple(x, y) {
 // ===== GAME PRESS =====
 let activePointerId = null;
 
-function handlePress(choice, x, y, pointerId) {
+const POINTER_CHAR = { mouse: 'm', touch: 't', pen: 'p', keyboard: 'k' };
+
+function handlePress(choice, x, y, pointerId, ptType, gw, gh) {
   if (state.gameOver) return;
   if (activePointerId !== null && activePointerId !== pointerId) return;
   const now = Date.now();
   if (now - state.lastPressTime < MIN_INTERVAL) return;
   state.lastPressTime = now;
 
+  if (!state.firstTapDone) {
+    state.firstTapDone = true;
+    document.getElementById('game').classList.add('tapped');
+  }
+
   // Track timestamp relative to game start
   state.timestamps.push(now - state.gameStartTime);
+
+  // Track tap position normalized to game element (0–100% with 1 decimal) + pointer type
+  state.tapsX.push(gw > 0 ? Math.round((x / gw) * 1000) / 10 : 50);
+  state.tapsY.push(gh > 0 ? Math.round((y / gh) * 1000) / 10 : 50);
+  state.pointerTypes.push(POINTER_CHAR[ptType] || '?');
 
   createRipple(x, y);
   if (navigator.vibrate) navigator.vibrate(10);
 
   const prediction = predict();
+  const predScore = state.lastPredScore;
   state.presses.push(choice);
   state.totalPresses++;
   updateTable(choice);
@@ -634,6 +950,7 @@ function handlePress(choice, x, y, pointerId) {
   if (state.totalPresses > WARMUP) {
     const hit = prediction === choice;
     state.predictions.push(prediction);
+    state.predScores.push(predScore);
     state.correct.push(hit);
     if (hit) { state.correctPredictions++; state.balance -= 1.00; }
     else { state.balance += LEVELS[state.level].reward; }
@@ -653,7 +970,122 @@ function handlePress(choice, x, y, pointerId) {
 }
 
 // ===== ANALYTICS =====
-const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbyUfEUxzWtkLG6-q4nEob-4ORS7OQTzkhQdHsX6dM9i1H5OA_NwVOKgjhKwNG2srpiz4A/exec';
+const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbyivqPVXiJDYToVDVQzn5s3kKUgpLl9ghk-AFCfvkAtsvbGQQOr2T42SFE9k_OrJdov/exec';
+
+// ===== PERCENTILE COMPARISON =====
+// Distributions per level: [P10, P25, P50, P75, P90].
+// Accuracy: HIGHER = more predictable = "worse" percentile (player loses).
+// Balance:  HIGHER = more money earned = "better" percentile.
+// Snapshots from real test sessions on 2026-05-05; live-updated via JSONP.
+const ACCURACY_BUCKETS = {
+  1: [40.5, 45.9, 54.1, 56.8, 63.8],
+  2: [45.6, 50.0, 52.6, 58.7, 63.9],
+  3: [49.4, 50.0, 53.2, 63.0, 80.0],
+  4: [50.3, 52.0, 53.6, 56.2, 57.7],
+  5: [51.8, 52.5, 53.0, 60.7, 67.7],
+};
+const BALANCE_BUCKETS = {
+  1: [8, 11, 14, 17, 20],
+  2: [6, 10, 14, 20, 28],
+  3: [8, 15, 22, 28, 35],
+  4: [5, 15, 25, 33, 42],
+  5: [2, 18, 30, 42, 55],
+  endgame: [10, 25, 40, 55, 70], // final balance among L5 winners
+};
+// Sample counts per level — needed for converting percentile → approximate rank.
+// Refreshed live from stats endpoint.
+const BALANCE_N = { 1: 25, 2: 19, 3: 15, 4: 15, 5: 7, endgame: 1 };
+const RANK_TIERS = [3, 5, 10, 20, 50, 100];
+const PERCENTILE_AT = [10, 25, 50, 75, 90];
+
+function _percentile(buckets, key, value, maxValForHighOvershoot) {
+  const b = buckets[key];
+  if (!b || value == null || isNaN(value)) return null;
+  if (value <= b[0]) return Math.max(1, Math.round(10 * Math.max(value, 0) / Math.max(b[0], 1)));
+  if (value >= b[4]) {
+    const span = Math.max((maxValForHighOvershoot || 100) - b[4], 1);
+    return Math.min(99, Math.round(90 + 9 * (value - b[4]) / span));
+  }
+  for (let i = 0; i < 4; i++) {
+    if (value >= b[i] && value <= b[i+1]) {
+      const span = b[i+1] - b[i] || 1;
+      return Math.round(PERCENTILE_AT[i] + (value - b[i]) / span * (PERCENTILE_AT[i+1] - PERCENTILE_AT[i]));
+    }
+  }
+  return 50;
+}
+
+function comparePercentile(level, userAcc) {
+  return _percentile(ACCURACY_BUCKETS, level, userAcc, 100);
+}
+function compareBalancePercentile(key, userBal) {
+  return _percentile(BALANCE_BUCKETS, key, userBal, BALANCE_BUCKETS[key] ? BALANCE_BUCKETS[key][4] + 30 : 100);
+}
+
+function comparisonText(percentile) {
+  if (percentile == null) return '';
+  const T_ = T_get();
+  if (percentile >= 80) return T_.cmpVeryPredictable.replace('{X}', percentile);
+  if (percentile >= 50) return T_.cmpPredictable.replace('{X}', percentile);
+  if (percentile >= 30) return T_.cmpAverage;
+  if (percentile >= 10) return T_.cmpRandom.replace('{X}', 100 - percentile);
+  return T_.cmpVeryRandom.replace('{X}', 100 - percentile);
+}
+
+function balanceRankText(percentile, n) {
+  if (percentile == null || !n || n < 1) return '';
+  // Approximate rank from percentile (1 = best, n = worst).
+  const rank = Math.max(1, Math.ceil((1 - percentile / 100) * n));
+  const T_ = T_get();
+  if (rank === 1) return T_.balTopAll;
+  for (const tier of RANK_TIERS) {
+    if (rank <= tier) return T_.balTopN.replace('{N}', tier);
+  }
+  return '';
+}
+
+// Personal best tracking per level (keys: '1'…'5', 'endgame'). Stored in localStorage.
+function getBest(key)        { const v = localStorage.getItem('tns_best_' + key); return v ? parseFloat(v) : null; }
+function setBestLS(key, val) { localStorage.setItem('tns_best_' + key, String(val)); }
+function updateBest(key, val) {
+  const prev = getBest(key);
+  if (prev === null || val > prev) { setBestLS(key, val); return true; }
+  return false;
+}
+function bestLineHTML(key, isNewRecord) {
+  const best = getBest(key);
+  if (best === null) return '';
+  const T_ = T_get();
+  const tpl = isNewRecord ? T_.balNewRecord : T_.balBest;
+  return tpl.replace('{X}', best.toFixed(2));
+}
+
+// Live update from Apps Script (JSONP, fails silently; defaults remain)
+window.onLiveStats = function(data) {
+  if (!data || data.status !== 'ok' || !data.stats) return;
+  const acc = data.stats.accuracy || {};
+  for (const lvl in acc) {
+    const s = acc[lvl];
+    if (s && s.p && s.p.length === 5 && s.n >= 5) ACCURACY_BUCKETS[lvl] = s.p;
+  }
+  const bal = data.stats.balance || {};
+  for (const key in bal) {
+    const s = bal[key];
+    if (s && s.p && s.p.length === 5 && s.n >= 1) {
+      BALANCE_BUCKETS[key] = s.p;
+      BALANCE_N[key] = s.n;
+    }
+  }
+};
+(function loadLiveStats() {
+  try {
+    const s = document.createElement('script');
+    s.src = SHEETS_URL + '?action=stats&callback=onLiveStats&t=' + Date.now();
+    s.onerror = () => s.remove();
+    s.onload = () => s.remove();
+    document.head.appendChild(s);
+  } catch (e) {}
+})();
 
 function getSessionId() {
   let id = localStorage.getItem('tns_session');
@@ -664,6 +1096,12 @@ function getSessionId() {
   }
   return id;
 }
+
+// Age stored as a numeric string (e.g. "27") or 'skip'. Null = not asked yet.
+// Asked once after the player finishes L2 (any outcome); persisted in localStorage.
+function getAge()  { return localStorage.getItem('tns_age') || null; }
+function setAge(v) { localStorage.setItem('tns_age', String(v)); }
+const AGE_MIN = 10, AGE_MAX = 90, AGE_DEFAULT = 50;
 
 function getAttemptNumber() {
   let n = parseInt(localStorage.getItem('tns_attempt') || '0');
@@ -766,17 +1204,18 @@ function showResult() {
   const won = state.balance >= state.initialBalance;
   const hasNext = state.level < LEVELS.length - 1;
 
-  // Context-aware result messages
+  // Context-aware result message — each key is an array of variants; pick one at random
+  const pickVariant = (v) => Array.isArray(v) ? v[Math.floor(Math.random() * v.length)] : v;
   let title = '';
   if (won) {
-    if (pct < 48) title = T.incredible;
-    else if (pct < 52) title = T.won;
-    else title = T.wonBarely;
+    if (pct < 48) title = pickVariant(T.incredible);
+    else if (pct < 52) title = pickVariant(T.won);
+    else title = pickVariant(T.wonBarely);
   } else {
-    if (pct >= 65) title = T.predictable70;
-    else if (pct >= 58) title = T.predictable60;
-    else if (pct >= 53) title = T.almost55;
-    else title = T.lostSoClose;
+    if (pct >= 65) title = pickVariant(T.predictable70);
+    else if (pct >= 58) title = pickVariant(T.predictable60);
+    else if (pct >= 53) title = pickVariant(T.almost55);
+    else title = pickVariant(T.lostSoClose);
   }
 
   if (won && hasNext && state.level + 1 > state.maxUnlocked) state.maxUnlocked = state.level + 1;
@@ -793,6 +1232,49 @@ function showResult() {
 
   const balColor = state.balance >= state.initialBalance ? '#00ff88' : '#ff2244';
 
+  const isEndgame = won && !hasNext;
+  const percentile = comparePercentile(lvl.id, pct);
+  const cmpLine = comparisonText(percentile);
+
+  const balKey = isEndgame ? 'endgame' : lvl.id;
+  const balPercentile = compareBalancePercentile(balKey, state.balance);
+  const balRankLine = balanceRankText(balPercentile, BALANCE_N[balKey]);
+
+  // Update personal best for this category. Returns true if this run set a new record.
+  const isNewBest = updateBest(balKey, state.balance);
+  const bestLine = bestLineHTML(balKey, isNewBest);
+
+  const cmpHTML = (cmpLine || balRankLine || bestLine)
+    ? '<div class="result-comparison">' +
+        (cmpLine ? '<div class="cmp-line">' + cmpLine + '</div>' +
+                   '<div class="cmp-sub">' + T.cmpOnLevel + '</div>' : '') +
+        (balRankLine ? '<div class="cmp-money">' + balRankLine + '</div>' : '') +
+        (bestLine ? '<div class="cmp-best' + (isNewBest ? ' is-new' : '') + '">' + bestLine + '</div>' : '') +
+      '</div>'
+    : '';
+
+  // Ask for age once, after L2 (any outcome), if not yet set.
+  // Stepper (-/+ buttons) + slider for fast jump; default value AGE_DEFAULT.
+  const shouldAskAge = lvl.id === 2 && getAge() === null;
+  const ageCardHTML = shouldAskAge
+    ? '<div class="age-card fade-item" id="ageCard" style="animation-delay:0ms">' +
+        '<div class="age-title">' + T.ageTitle + '</div>' +
+        '<div class="age-question">' + T.ageQuestion + '</div>' +
+        '<div class="age-reason">' + T.ageReason + '</div>' +
+        '<div class="age-stepper">' +
+          '<button class="age-step-btn" data-delta="-1" aria-label="-1">−</button>' +
+          '<div class="age-value" id="ageValue">' + AGE_DEFAULT + '</div>' +
+          '<button class="age-step-btn" data-delta="1" aria-label="+1">+</button>' +
+        '</div>' +
+        '<input type="range" class="age-slider" id="ageSlider" min="' + AGE_MIN + '" max="' + AGE_MAX + '" value="' + AGE_DEFAULT + '">' +
+        '<div class="age-actions">' +
+          '<button class="age-submit" id="ageSubmit">' + T.ageSubmit + '</button>' +
+          '<button class="age-skip" id="ageSkipBtn">' + T.ageSkip + '</button>' +
+        '</div>' +
+        '<div class="age-anon">' + T.ageAnon + '</div>' +
+      '</div>'
+    : '';
+
   const cellSize = levelPresses.length > 200 ? 4 : 6;
   const cs = ';width:' + cellSize + 'px;height:' + cellSize + 'px';
 
@@ -807,14 +1289,13 @@ function showResult() {
     predMap += '<div class="cell" style="background:' + (c?'#ff2244':'#00ff88') + cs + '"></div>';
   });
 
-  const isEndgame = won && !hasNext;
   const authorHTML = '<div class="result-author">' + T.author + ': <a href="https://www.facebook.com/teo.spiro.2025" target="_blank">Teo Spiro</a></div>';
 
   let btns = '';
   if (won && hasNext) {
     const nx = LEVELS[state.level + 1];
     const isLast = state.level + 1 === LEVELS.length - 1;
-    btns = '<button class="btn-next-level' + (isLast ? ' final' : '') + '" id="btnNextLevel">' + T.levelName + ' ' + nx.id + ' &rarr;</button><button class="btn-secondary" id="btnRetry">' + T.replayLevel + '</button>';
+    btns = '<button class="btn-next-level ' + nx.css + (isLast ? ' final' : '') + '" id="btnNextLevel">' + T.levelName + ' ' + nx.id + ' &rarr;</button><button class="btn-secondary" id="btnRetry">' + T.replayLevel + '</button>';
   } else {
     btns = '<button class="btn-primary" id="btnRetry">' + T.retry + '</button>';
   }
@@ -824,13 +1305,11 @@ function showResult() {
     document.getElementById('result').innerHTML =
       '<div class="endgame-card fade-item" style="animation-delay:0ms">' +
         '<div class="endgame-title">' + T.shareTitle + '</div>' +
-        '<div class="endgame-badge">\u2605 ' + T.level + ' 1\u20135 \u2605</div>' +
+        '<div class="endgame-badge">\u2605 ' + T.level + ' 5 \u2605</div>' +
         '<div class="endgame-message">' + T.gameComplete + '</div>' +
         '<div class="endgame-sub">' + T.provedRandom + '</div>' +
         '<div class="endgame-balance">$' + state.balance.toFixed(2) + '</div>' +
-        '<div class="result-stats" style="text-align:center">' +
-          T.guessed + ': <span>' + correctN + ' ' + T.of + ' ' + scored + ' (' + pct.toFixed(0) + '%)</span>' +
-        '</div>' +
+        cmpHTML +
         authorHTML +
       '</div>' +
       '<div class="balance-graph-container fade-item" style="animation-delay:150ms">' +
@@ -856,15 +1335,13 @@ function showResult() {
     }
 
     document.getElementById('result').innerHTML =
-      '<div class="result-card fade-item" style="animation-delay:0ms">' +
+      ageCardHTML +
+      '<div class="result-card fade-item" style="animation-delay:' + (shouldAskAge ? '200' : '0') + 'ms">' +
         '<div class="result-card-title">' + T.shareTitle + '</div>' +
         '<span class="result-level-badge-big ' + lvl.css + '">' + T.level + ' ' + lvl.id + '</span>' +
         '<h2 style="font-size:1.3rem;line-height:1.3">' + title + '</h2>' +
         '<div class="result-balance-big" style="color:' + balColor + '">$' + state.balance.toFixed(2) + '</div>' +
-        '<div class="result-stats">' +
-          T.guessed + ': <span>' + correctN + ' ' + T.of + ' ' + scored + ' (' + pct.toFixed(0) + '%)</span><br>' +
-          T.leftRight + ': <span>' + count0 + '/' + count1 + '</span>' +
-        '</div>' +
+        cmpHTML +
         authorHTML +
       '</div>' +
       '<div class="balance-graph-container fade-item" style="animation-delay:150ms">' +
@@ -887,6 +1364,30 @@ function showResult() {
   const nextBtn = document.getElementById('btnNextLevel');
   if (nextBtn) nextBtn.addEventListener('click', () => startGame(state.level + 1));
   document.getElementById('btnTheory').addEventListener('click', showTheory);
+
+  // Age card: stepper + slider; only present after L2 if age not yet asked
+  const ageCard = document.getElementById('ageCard');
+  if (ageCard) {
+    const valueEl  = document.getElementById('ageValue');
+    const sliderEl = document.getElementById('ageSlider');
+    let currentAge = AGE_DEFAULT;
+    const setAgeDisplay = (v) => {
+      v = Math.max(AGE_MIN, Math.min(AGE_MAX, v|0));
+      currentAge = v;
+      valueEl.textContent = v;
+      sliderEl.value = v;
+    };
+    ageCard.querySelectorAll('.age-step-btn').forEach(btn => {
+      btn.addEventListener('click', () => setAgeDisplay(currentAge + (+btn.dataset.delta)));
+    });
+    sliderEl.addEventListener('input', (e) => setAgeDisplay(+e.target.value));
+    const dismiss = () => {
+      ageCard.classList.add('fade-out');
+      setTimeout(() => ageCard.remove(), 250);
+    };
+    document.getElementById('ageSubmit').addEventListener('click', () => { setAge(currentAge); dismiss(); });
+    document.getElementById('ageSkipBtn').addEventListener('click', () => { setAge('skip'); dismiss(); });
+  }
 
   showScreen('result');
 
@@ -913,12 +1414,18 @@ function showResult() {
     maxRun: calcMaxRun(levelPresses),
     topTrigram: calcTopTrigram(levelPresses),
     sequence: levelPresses.join(''),
+    predictions: state.predictions.join(''),
+    predScores: state.predScores.join(','),
+    pointerTypes: state.pointerTypes.join(''),
+    tapsX: state.tapsX.join(','),
+    tapsY: state.tapsY.join(','),
     timestamps: state.timestamps.join(','),
     accLast10: accLast10,
     accLast20: accLast20,
     carryoverBalance: state.carryoverBalance,
     device: getDeviceType(),
     lang: currentLang,
+    age: getAge() || '',
     userAgent: navigator.userAgent,
   });
 }
@@ -976,16 +1483,26 @@ function startGame(levelIndex) {
   state.level = levelIndex || 0;
   const lvl = LEVELS[state.level];
 
-  // Algorithm memory (presses + table) persists for the ENTIRE session.
-  // Only balance resets on replay; it carries over when advancing.
-  if (Object.keys(state.table).length === 0) {
-    // Very first game of session: init table
-    initTable(lvl.maxK);
-  } else if (lvl.maxK > state.currentMaxK) {
-    // Need higher depth: expand, keep all existing data
-    expandTable(lvl.maxK);
+  // Detect retry: same level as before AND we already played something.
+  const isReplay = levelIndex === prevLevel && state.totalPresses > 0;
+
+  if (isReplay) {
+    // Restore algorithm to its state at level-entry — forget the lost attempt.
+    // (If the player had won, they'd be advancing, not replaying.)
+    state.presses = (state.pressesCheckpoint || []).slice();
+    state.table = JSON.parse(JSON.stringify(state.tableCheckpoint || {}));
+    state.currentMaxK = state.currentMaxKCheckpoint || lvl.maxK;
+    if (Object.keys(state.table).length === 0) initTable(lvl.maxK);
+    else if (lvl.maxK > state.currentMaxK) expandTable(lvl.maxK);
+  } else {
+    // First-ever start OR advance to next level: prepare table, then snapshot
+    // current state as the checkpoint for THIS level.
+    if (Object.keys(state.table).length === 0) initTable(lvl.maxK);
+    else if (lvl.maxK > state.currentMaxK) expandTable(lvl.maxK);
+    state.pressesCheckpoint = state.presses.slice();
+    state.tableCheckpoint = JSON.parse(JSON.stringify(state.table));
+    state.currentMaxKCheckpoint = state.currentMaxK;
   }
-  // state.presses is NEVER reset — algorithm remembers everything
 
   // Balance: carry over when advancing, reset when replaying
   if (levelIndex > prevLevel && levelIndex > 0 && state.presses.length > 0) {
@@ -1002,6 +1519,7 @@ function startGame(levelIndex) {
   }
 
   state.predictions = [];
+  state.predScores = [];
   state.correct = [];
   state.totalPresses = 0;
   state.correctPredictions = 0;
@@ -1010,6 +1528,14 @@ function startGame(levelIndex) {
   state.lastPressTime = 0;
   state.gameStartTime = Date.now();
   state.timestamps = [];
+  state.tapsX = [];
+  state.tapsY = [];
+  state.pointerTypes = [];
+  state.firstTapDone = false;
+  document.getElementById('game').classList.remove('tapped');
+  const appEl = document.getElementById('app');
+  appEl.classList.remove('l1', 'l2', 'l3', 'l4', 'l5');
+  appEl.classList.add(lvl.css);
   updateWater();
   updateHUD();
   document.getElementById('hudPredResult').className = 'hud-prediction-result';
@@ -1025,7 +1551,8 @@ document.getElementById('game').addEventListener('pointerdown', (e) => {
   if (e.target.closest('.btn-stop')) return;
   activePointerId = e.pointerId;
   const rect = document.getElementById('game').getBoundingClientRect();
-  handlePress(e.clientX < window.innerWidth / 2 ? 0 : 1, e.clientX - rect.left, e.clientY - rect.top, e.pointerId);
+  const choice = e.clientX < window.innerWidth / 2 ? 0 : 1;
+  handlePress(choice, e.clientX - rect.left, e.clientY - rect.top, e.pointerId, e.pointerType, rect.width, rect.height);
 });
 
 document.getElementById('game').addEventListener('pointerup', (e) => {
@@ -1050,9 +1577,10 @@ document.addEventListener('keydown', (e) => {
   else if (e.key === 'ArrowRight') choice = 1;
   if (choice < 0) return;
   e.preventDefault();
-  const cx = choice === 0 ? window.innerWidth * 0.25 : window.innerWidth * 0.75;
-  const cy = window.innerHeight * 0.5;
-  handlePress(choice, cx, cy, 'keyboard');
+  const rect = document.getElementById('game').getBoundingClientRect();
+  const cx = choice === 0 ? rect.width * 0.25 : rect.width * 0.75;
+  const cy = rect.height * 0.5;
+  handlePress(choice, cx, cy, 'keyboard', 'keyboard', rect.width, rect.height);
 });
 
 // ===== LANGUAGE =====
@@ -1075,6 +1603,49 @@ document.getElementById('btnLang').addEventListener('click', () => {
 });
 
 try { if (screen.orientation && screen.orientation.lock) screen.orientation.lock('portrait').catch(()=>{}); } catch(e){}
+
+// ===== DEV MODE — visible only with ?dev=1 in URL, or via Shift+D toggle =====
+let devBar = null;
+function buildDevBar_() {
+  const bar = document.createElement('div');
+  bar.id = 'devBar';
+  bar.style.cssText = 'position:fixed;top:calc(env(safe-area-inset-top) + 0.4rem);right:0.4rem;z-index:99999;display:flex;gap:0.25rem;padding:0.35rem;background:rgba(0,0,0,0.85);border:1px solid #666;border-radius:8px;font-family:JetBrains Mono,monospace';
+  const mkBtn = (label, onClick, extra) => {
+    const b = document.createElement('button');
+    b.textContent = label;
+    b.style.cssText = 'background:none;border:1px solid #666;color:#ddd;padding:0.3rem 0.55rem;font-family:inherit;font-size:0.7rem;font-weight:700;border-radius:4px;cursor:pointer;letter-spacing:0.05em' + (extra || '');
+    b.addEventListener('click', (e) => { e.stopPropagation(); e.preventDefault(); onClick(); });
+    b.addEventListener('pointerdown', (e) => { e.stopPropagation(); });
+    return b;
+  };
+  for (let i = 0; i < LEVELS.length; i++) {
+    bar.appendChild(mkBtn('L' + (i + 1), () => startGame(i)));
+  }
+  bar.appendChild(mkBtn('WIN', () => {
+    if (state.screen !== 'game') return;
+    state.balance = state.initialBalance + 15;
+    state.balanceHistory.push(state.balance);
+    state.gameOver = true; state.gameOverReason = 'dev';
+    showResult();
+  }));
+  bar.appendChild(mkBtn('AGE', () => {
+    localStorage.removeItem('tns_age');
+    location.reload();
+  }));
+  bar.appendChild(mkBtn('×', () => { bar.remove(); devBar = null; }, ';color:#888;border-color:#444'));
+  return bar;
+}
+function toggleDevBar_() {
+  if (devBar) { devBar.remove(); devBar = null; }
+  else { devBar = buildDevBar_(); document.body.appendChild(devBar); }
+}
+if (new URLSearchParams(location.search).get('dev') === '1') toggleDevBar_();
+document.addEventListener('keydown', (e) => {
+  if (e.shiftKey && (e.code === 'KeyD' || e.key === 'D' || e.key === 'd')) {
+    e.preventDefault();
+    toggleDevBar_();
+  }
+});
 </script>
 </body>
 </html>
