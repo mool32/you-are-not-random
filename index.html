@@ -34,7 +34,10 @@
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="dns-prefetch" href="https://script.google.com">
+<!-- Non-blocking font load: render starts immediately with system mono fallback, swaps to JetBrains Mono when loaded -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" media="print" onload="this.media='all'">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap"></noscript>
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -1078,15 +1081,19 @@ window.onLiveStats = function(data) {
     }
   }
 };
-(function loadLiveStats() {
+// Defer JSONP stats fetch until after first paint so it doesn't compete with
+// the initial render on slow mobile networks. Defaults work fine until it arrives.
+function loadLiveStats() {
   try {
     const s = document.createElement('script');
     s.src = SHEETS_URL + '?action=stats&callback=onLiveStats&t=' + Date.now();
     s.onerror = () => s.remove();
-    s.onload = () => s.remove();
+    s.onload  = () => s.remove();
     document.head.appendChild(s);
   } catch (e) {}
-})();
+}
+if (document.readyState === 'complete') setTimeout(loadLiveStats, 0);
+else window.addEventListener('load', () => setTimeout(loadLiveStats, 100));
 
 function getSessionId() {
   let id = localStorage.getItem('tns_session');
