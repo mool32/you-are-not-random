@@ -53,18 +53,20 @@ html, body {
   overscroll-behavior: none;
   touch-action: manipulation; /* disable double-tap zoom; pan/scroll still work */
 }
-body { padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left); }
-
-#app {
-  width: 100%; height: 100%; position: relative;
+body {
+  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+  /* Level-color CSS variables live on body so they cascade to body-level
+     elements too (e.g., the age modal that's appended to body directly). */
   --level-color: #00ff88;
   --level-glow: rgba(0,255,136,0.06);
 }
-#app.l1 { --level-color: #00ff88; --level-glow: rgba(0,255,136,0.06); }
-#app.l2 { --level-color: #ffcc00; --level-glow: rgba(255,204,0,0.06); }
-#app.l3 { --level-color: #ff8800; --level-glow: rgba(255,136,0,0.07); }
-#app.l4 { --level-color: #ff2244; --level-glow: rgba(255,34,68,0.07); }
-#app.l5 { --level-color: #cc44ff; --level-glow: rgba(204,68,255,0.08); }
+body.l1 { --level-color: #00ff88; --level-glow: rgba(0,255,136,0.06); }
+body.l2 { --level-color: #ffcc00; --level-glow: rgba(255,204,0,0.06); }
+body.l3 { --level-color: #ff8800; --level-glow: rgba(255,136,0,0.07); }
+body.l4 { --level-color: #ff2244; --level-glow: rgba(255,34,68,0.07); }
+body.l5 { --level-color: #cc44ff; --level-glow: rgba(204,68,255,0.08); }
+
+#app { width: 100%; height: 100%; position: relative; }
 
 .screen {
   position: absolute; inset: 0;
@@ -1616,9 +1618,8 @@ function startGame(levelIndex) {
   state.pointerTypes = [];
   state.firstTapDone = false;
   document.getElementById('game').classList.remove('tapped');
-  const appEl = document.getElementById('app');
-  appEl.classList.remove('l1', 'l2', 'l3', 'l4', 'l5');
-  appEl.classList.add(lvl.css);
+  document.body.classList.remove('l1', 'l2', 'l3', 'l4', 'l5');
+  document.body.classList.add(lvl.css);
   updateWater();
   updateHUD();
   document.getElementById('hudPredResult').className = 'hud-prediction-result';
