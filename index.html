@@ -1365,7 +1365,6 @@ function showResult() {
     }
 
     document.getElementById('result').innerHTML =
-      ageCardHTML +
       '<div class="result-card fade-item" style="animation-delay:0ms">' +
         '<div class="result-card-title">' + T.shareTitle + '</div>' +
         '<span class="result-level-badge-big ' + lvl.css + '">' + T.level + ' ' + lvl.id + '</span>' +
@@ -1395,7 +1394,14 @@ function showResult() {
   if (nextBtn) nextBtn.addEventListener('click', () => startGame(state.level + 1));
   document.getElementById('btnTheory').addEventListener('click', showTheory);
 
-  // Age modal: stepper + slider; only present after L2 if age not yet asked
+  // Age modal: stepper + slider; only present after L2 if age not yet asked.
+  // Appended directly to document.body (not inside #result) so it can't be
+  // hidden by screen-fade opacity or any parent stacking-context quirks.
+  // Cleanup: remove any stale overlay from a previous render first.
+  document.querySelectorAll('.age-overlay').forEach(el => el.remove());
+  if (shouldAskAge) {
+    document.body.insertAdjacentHTML('beforeend', ageCardHTML);
+  }
   const ageOverlay = document.getElementById('ageOverlay');
   if (ageOverlay) {
     const valueEl  = document.getElementById('ageValue');
