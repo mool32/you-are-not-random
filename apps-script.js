@@ -196,19 +196,26 @@ function getOrCreateSheet_(name) {
 
 function ensureHeaders_(sheet, expected) {
   if (sheet.getLastRow() === 0) {
+    // First-ever write: create headers AND apply text format
     sheet.appendRow(expected);
     sheet.getRange(1, 1, 1, expected.length).setFontWeight('bold');
     sheet.setFrozenRows(1);
-  } else {
-    const current = sheet.getRange(1, 1, 1, Math.max(sheet.getLastColumn(), expected.length)).getValues()[0];
-    for (let i = 0; i < expected.length; i++) {
-      if ((current[i] || '') !== expected[i]) {
-        sheet.getRange(1, i + 1).setValue(expected[i]).setFontWeight('bold');
-      }
+    applyTextFormat_(sheet, expected);
+    return;
+  }
+  // Existing sheet: only sync headers if they drift. DO NOT re-apply text
+  // format on every POST — that was rewriting numberFormat on N×10 cells
+  // each write, which scaled badly and caused multi-second response times
+  // under viral load. Format is set once at creation; new rows inherit it.
+  let dirty = false;
+  const current = sheet.getRange(1, 1, 1, Math.max(sheet.getLastColumn(), expected.length)).getValues()[0];
+  for (let i = 0; i < expected.length; i++) {
+    if ((current[i] || '') !== expected[i]) {
+      sheet.getRange(1, i + 1).setValue(expected[i]).setFontWeight('bold');
+      dirty = true;
     }
   }
-  // Always apply text format on every POST — idempotent, fixes legacy sheets too
-  applyTextFormat_(sheet, expected);
+  if (dirty) applyTextFormat_(sheet, expected);
 }
 
 // Force TEXT format on columns whose values Sheets might autoparse as numbers.
