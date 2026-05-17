@@ -772,7 +772,17 @@ const LANG = {
   },
 };
 
-let currentLang = 'en';
+// Default: detect browser language. Russian browsers get RU, everyone else EN.
+// User can still toggle via the EN/RU button on the welcome screen.
+let currentLang = (function () {
+  try {
+    const langs = navigator.languages || [navigator.language || ''];
+    for (const l of langs) {
+      if (l && l.toLowerCase().startsWith('ru')) return 'ru';
+    }
+  } catch (e) {}
+  return 'en';
+})();
 function T_get() { return LANG[currentLang]; }
 Object.defineProperty(window, 'T', { get: T_get });
 
@@ -1366,6 +1376,11 @@ function showResult() {
       levelUpHTML = '<div class="result-level-up fade-item" style="animation-delay:350ms"><div class="level-up-title">' + T.unlocked + ' ' + T.levelName + ' ' + nx.id + '!</div><div class="level-up-desc">' + nx.presses + ' ' + T.pressesWord + ', $' + state.balance.toFixed(2) + ' ' + T.atStart + '</div></div>';
     }
 
+    // Reorder for prominence: card → level-up → ACTION BUTTONS → details below.
+    // Players were dropping after L1 because the Next Level button sat below
+    // the fold (under balance graph + pattern map). Now it's right under the
+    // balance, can't be missed. Detail blocks remain accessible for those
+    // who scroll.
     document.getElementById('result').innerHTML =
       '<div class="result-card fade-item" style="animation-delay:0ms">' +
         '<div class="result-card-title">' + T.shareTitle + '</div>' +
@@ -1375,18 +1390,19 @@ function showResult() {
         cmpHTML +
         authorHTML +
       '</div>' +
-      '<div class="balance-graph-container fade-item" style="animation-delay:150ms">' +
+      levelUpHTML +
+      '<div class="result-buttons fade-item" style="animation-delay:120ms">' + btns + '</div>' +
+      '<div class="balance-graph-container fade-item" style="animation-delay:220ms">' +
         '<div class="balance-graph-label">' + T.graphLabel + '</div>' +
         '<canvas class="balance-graph" id="balGraph"></canvas>' +
       '</div>' +
-      '<div class="pattern-map-container fade-item" style="animation-delay:230ms">' +
+      '<div class="pattern-map-container fade-item" style="animation-delay:300ms">' +
         '<div class="pattern-map-label">' + T.yourPresses + '</div>' +
         '<div class="pattern-map">' + pressMap + '</div>' +
         '<div class="pattern-map-label" style="margin-top:0.4rem">' + T.predictions + '</div>' +
         '<div class="pattern-map">' + predMap + '</div>' +
       '</div>' +
-      levelUpHTML +
-      '<div class="result-buttons fade-item" style="animation-delay:380ms">' + btns +
+      '<div class="result-buttons fade-item" style="animation-delay:380ms">' +
         '<button class="btn-secondary" id="btnTheory">' + T.howItWorks + '</button>' +
       '</div>';
   }
